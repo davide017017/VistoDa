@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - VistoDa</title>
+
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico" />
+    <link rel="manifest" href="../manifest.json" />
+    <meta name="theme-color" content="#0f0f0f" />
+
+    <!-- Bootstrap CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body
+    class="d-flex align-items-center vh-100"
+    style="background-color: #0f0f0f"
+  >
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-4 col-lg-3">
+          <div
+            class="card border-0 shadow-lg"
+            style="background-color: #1a1a1a"
+          >
+            <div class="card-body p-4">
+              <!-- Logo / Titolo -->
+              <h3 class="text-center fw-semibold mb-4" style="color: #e6d5b8">
+                Visto<span style="color: #8c7a5b">Da</span>
+              </h3>
+
+              <!-- Form -->
+              <form id="loginForm" novalidate>
+                <div class="mb-3">
+                  <input
+                    type="email"
+                    id="email"
+                    class="form-control border-0"
+                    placeholder="Email"
+                    required
+                    style="background-color: #262626; color: #eaeaea"
+                  />
+                </div>
+
+                <div class="mb-4">
+                  <input
+                    type="password"
+                    id="password"
+                    class="form-control border-0"
+                    placeholder="Password"
+                    required
+                    style="background-color: #262626; color: #eaeaea"
+                  />
+                </div>
+
+                <button
+                  class="btn w-100 fw-medium"
+                  style="background-color: #8c7a5b; color: #0f0f0f"
+                >
+                  Accedi
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Footer minimal -->
+          <div class="text-center mt-4">
+            <small style="color: #5c5c5c"> © 2026 VistoDa </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./login.js"></script>
+  </body>
+</html>

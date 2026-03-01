@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VistoDa - Home</title>
+
+    <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico" />
+    <link rel="manifest" href="../manifest.json" />
+    <meta name="theme-color" content="#0f0f0f" />
+
+    <!-- Bootstrap CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="min-vh-100" style="background-color: #0f0f0f; color: #eaeaea">
+    <div class="container py-4">
+      <!-- HEADER -->
+      <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+          <h2 style="color: #e6d5b8" class="mb-0">
+            Visto<span style="color: #8c7a5b">Da</span>
+          </h2>
+          <small style="color: #5c5c5c" id="welcomeUser"></small>
+        </div>
+
+        <button
+          class="btn btn-sm"
+          id="logoutBtn"
+          style="border: 1px solid #8c7a5b; color: #8c7a5b"
+        >
+          Logout
+        </button>
+      </div>
+
+      <!-- FILTRI -->
+      <div class="mb-4">
+        <div class="btn-group" role="group">
+          <button
+            class="btn active"
+            data-filter="all"
+            style="background-color: #8c7a5b; color: #0f0f0f"
+          >
+            Tutti
+          </button>
+
+          <button
+            class="btn"
+            data-filter="film"
+            style="border: 1px solid #444; color: #aaa"
+          >
+            Film
+          </button>
+
+          <button
+            class="btn"
+            data-filter="serie"
+            style="border: 1px solid #444; color: #aaa"
+          >
+            Serie
+          </button>
+        </div>
+      </div>
+
+      <!-- LISTA MEDIA -->
+      <div class="row g-4" id="mediaList">
+        <!-- Card dinamiche generate da JS -->
+      </div>
+    </div>
+
+    <script type="module" src="./home.js"></script>
+  </body>
+</html>
