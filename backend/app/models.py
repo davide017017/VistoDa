@@ -1,5 +1,4 @@
 from sqlalchemy import (
-    Column,
     Integer,
     String,
     Text,
@@ -10,21 +9,27 @@ from sqlalchemy import (
     CheckConstraint,
 )
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from .database import Base
 
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
-    email = Column(String(255), unique=True, nullable=False, index=True)
-    password_hash = Column(Text, nullable=False)
-    is_demo = Column(Boolean, default=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=False, index=True
+    )
+    password_hash: Mapped[str] = mapped_column(Text, nullable=False)
+    is_demo: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
-    media = relationship("Media", back_populates="user", cascade="all, delete")
+    media: Mapped[list["Media"]] = relationship(
+        back_populates="user", cascade="all, delete"
+    )
 
 
 class Media(Base):
@@ -34,24 +39,27 @@ class Media(Base):
         CheckConstraint("rating >= 1 AND rating <= 10", name="rating_between_1_10"),
     )
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-    user_id = Column(
-        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
 
-    title = Column(String(255), nullable=False)
-    type = Column(String(50), nullable=False)
-    status = Column(String(50), nullable=False)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    type: Mapped[str] = mapped_column(String(50), nullable=False)
+    status: Mapped[str] = mapped_column(String(50), nullable=False)
 
-    year = Column(Integer, nullable=True)
+    year: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    rating: Mapped[Numeric | None] = mapped_column(Numeric(4, 2), nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    rating = Column(Numeric(4, 2), nullable=True)
-    notes = Column(Text, nullable=True)
-
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    created_at: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[DateTime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
-    user = relationship("User", back_populates="media")
+    user: Mapped["User"] = relationship(back_populates="media")

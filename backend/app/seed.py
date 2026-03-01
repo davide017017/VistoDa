@@ -1,7 +1,7 @@
 import os
 from .database import SessionLocal
 from .models import User
-from .auth import hash_password
+from .security import hash_password
 
 
 def seed_users() -> None:
