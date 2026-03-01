@@ -13,10 +13,22 @@ def seed_users() -> None:
 
         admin_email = os.getenv("SEED_ADMIN_EMAIL")
         admin_password = os.getenv("SEED_ADMIN_PASSWORD")
+        admin_nickname = os.getenv("SEED_ADMIN_NICKNAME")
+
         demo_email = os.getenv("SEED_DEMO_EMAIL")
         demo_password = os.getenv("SEED_DEMO_PASSWORD")
+        demo_nickname = os.getenv("SEED_DEMO_NICKNAME")
 
-        if not all([admin_email, admin_password, demo_email, demo_password]):
+        if not all(
+            [
+                admin_email,
+                admin_password,
+                demo_email,
+                demo_password,
+                admin_nickname,
+                demo_nickname,
+            ]
+        ):
             print("Seed skipped: missing env variables")
             return
 
@@ -27,12 +39,14 @@ def seed_users() -> None:
             email=admin_email,
             password_hash=hash_password(admin_password),
             is_demo=False,
+            nickname=admin_nickname,
         )
 
         demo = User(
             email=demo_email,
             password_hash=hash_password(demo_password),
             is_demo=True,
+            nickname=demo_nickname,
         )
 
         db.add(admin)
@@ -58,7 +72,7 @@ def seed_media() -> None:
             return
 
         media_list = [
-            # 🎬 FILM
+            # 🎬 FILM (completed)
             {
                 "title": "Inception",
                 "type": "film",
@@ -75,7 +89,24 @@ def seed_media() -> None:
                 "rating": Decimal("9.8"),
                 "notes": "Hans Zimmer + Nolan = perfection",
             },
-            # 📺 SERIE
+            # 🎬 FILM (watching / recommended)
+            {
+                "title": "Dune: Part Two",
+                "type": "film",
+                "status": "watching",
+                "year": 2024,
+                "rating": None,
+                "notes": "Da finire nel weekend",
+            },
+            {
+                "title": "The Prestige",
+                "type": "film",
+                "status": "recommended",
+                "year": 2006,
+                "rating": None,
+                "notes": "Consigliato da amici",
+            },
+            # 📺 SERIE (completed)
             {
                 "title": "Breaking Bad",
                 "type": "serie",
@@ -92,7 +123,24 @@ def seed_media() -> None:
                 "rating": Decimal("9.2"),
                 "notes": "Season 1 legendary",
             },
-            # 🎌 ANIME
+            # 📺 SERIE (watching / recommended)
+            {
+                "title": "Severance",
+                "type": "serie",
+                "status": "watching",
+                "year": 2022,
+                "rating": None,
+                "notes": "In visione",
+            },
+            {
+                "title": "The Bear",
+                "type": "serie",
+                "status": "recommended",
+                "year": 2022,
+                "rating": None,
+                "notes": "Da vedere assolutamente",
+            },
+            # 🎌 ANIME (completed)
             {
                 "title": "Attack on Titan",
                 "type": "anime",
@@ -108,6 +156,23 @@ def seed_media() -> None:
                 "year": 2006,
                 "rating": Decimal("9.7"),
                 "notes": "Psychological brilliance",
+            },
+            # 🎌 ANIME (watching / recommended)
+            {
+                "title": "Frieren: Beyond Journey's End",
+                "type": "anime",
+                "status": "watching",
+                "year": 2023,
+                "rating": None,
+                "notes": "Molto chill",
+            },
+            {
+                "title": "Monster",
+                "type": "anime",
+                "status": "recommended",
+                "year": 2004,
+                "rating": None,
+                "notes": "Capolavoro consigliato",
             },
         ]
 

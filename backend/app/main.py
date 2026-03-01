@@ -1,4 +1,11 @@
+from pathlib import Path
+from dotenv import load_dotenv
 import os
+
+# Carica backend/.env
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
@@ -10,19 +17,14 @@ app = FastAPI()
 ENV = os.getenv("ENV", "development")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "")
 
-# 🔥 Errore esplicito in produzione
 if ENV == "production" and not FRONTEND_URL:
     raise RuntimeError(
         "FRONTEND_URL is not set. "
         "Set FRONTEND_URL in your production environment variables."
     )
 
-# 🌍 CORS config
 if ENV == "development":
-    allow_origins = [
-        "http://127.0.0.1:5500",
-        "http://localhost:5500",
-    ]
+    allow_origins = ["http://127.0.0.1:5500", "http://localhost:5500"]
 else:
     allow_origins = [FRONTEND_URL]
 

@@ -1,38 +1,51 @@
 import { requireAuth } from "../shared/auth.js";
 import { fetchMedia } from "./services/mediaService.js";
 import { fetchCurrentUser } from "./services/userService.js";
-import { renderMedia } from "./components/mediaList.js";
-import { initHeader, setWelcomeUser } from "./components/header.js";
-import { initFilters } from "./components/filters.js";
 
 requireAuth();
 
-const mediaList = document.getElementById("mediaList");
-
 let allMedia = [];
+let currentUser = null;
 
 async function init() {
-  initHeader();
+  const header = document.querySelector("vd-header");
+  const mediaList = document.querySelector("vd-media-list");
 
   // 👤 Carica utente
-  const user = await fetchCurrentUser();
-  setWelcomeUser(user);
+  currentUser = await fetchCurrentUser();
+  header.setUser(currentUser);
 
   // 🎬 Carica media
   allMedia = await fetchMedia();
-  renderMedia(mediaList, allMedia);
+  mediaList.render(allMedia, currentUser);
 
-  initFilters(handleFilter);
-}
+  // 🎛 Filtri
+  document.addEventListener("filters-change", (e) => {
+    const { type, status } = e.detail;
 
-function handleFilter(filter) {
-  if (filter === "all") {
-    renderMedia(mediaList, allMedia);
-    return;
-  }
+    const filtered = allMedia.filter((item) => {
+      const matchType = type === "all" || item.type === type;
+      const matchStatus = status === "all" || item.status === status;
+      return matchType && matchStatus;
+    });
 
-  const filtered = allMedia.filter((item) => item.type === filter);
-  renderMedia(mediaList, filtered);
+    mediaList.render(filtered, currentUser);
+  });
+
+  // ➕ Create placeholder
+  document.addEventListener("create-media", async (e) => {
+    console.log("CREATE:", e.detail);
+
+    // TODO: qui poi chiameremo la vera API POST /media
+    allMedia = await fetchMedia();
+    mediaList.render(allMedia, currentUser);
+  });
+
+  // 🗑 Delete placeholder
+  document.addEventListener("delete-media", (e) => {
+    console.log("Delete ID:", e.detail);
+    // qui poi metteremo vera API delete
+  });
 }
 
 init();

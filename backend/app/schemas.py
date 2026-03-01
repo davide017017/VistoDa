@@ -34,6 +34,7 @@ class UserLogin(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: EmailStr
+    nickname: str
     is_demo: bool
     created_at: datetime
 
