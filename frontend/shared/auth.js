@@ -8,6 +8,6 @@ export function getToken() {
 
 export function requireAuth() {
   if (!getToken()) {
-    window.location.href = "/login/login.html";
+    window.location.href = "/frontend/login/login.html";
   }
 }

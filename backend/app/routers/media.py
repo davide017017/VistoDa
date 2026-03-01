@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from .. import models, schemas, crud
-from ..dependencies import get_db, get_current_user
+from ..dependencies import get_db, get_current_user, block_demo
 
 router = APIRouter(prefix="/media", tags=["Media"])
 
@@ -14,14 +14,8 @@ router = APIRouter(prefix="/media", tags=["Media"])
 def create(
     data: schemas.MediaCreate,
     db: Session = Depends(get_db),
-    user: models.User = Depends(get_current_user),
+    user: models.User = Depends(block_demo),
 ):
-    if user.is_demo:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Demo user is read-only",
-        )
-
     return crud.create_media(db, user.id, data)
 
 
@@ -64,14 +58,8 @@ def update(
     media_id: int,
     data: schemas.MediaUpdate,
     db: Session = Depends(get_db),
-    user: models.User = Depends(get_current_user),
+    user: models.User = Depends(block_demo),
 ):
-    if user.is_demo:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Demo user is read-only",
-        )
-
     media = crud.get_media(db, user.id, media_id)
 
     if not media:
@@ -90,14 +78,8 @@ def update(
 def delete(
     media_id: int,
     db: Session = Depends(get_db),
-    user: models.User = Depends(get_current_user),
+    user: models.User = Depends(block_demo),
 ):
-    if user.is_demo:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Demo user is read-only",
-        )
-
     media = crud.get_media(db, user.id, media_id)
 
     if not media:

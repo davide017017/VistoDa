@@ -55,3 +55,19 @@ def get_current_user(
         )
 
     return user
+
+
+# -------------------------
+# Block demo user (read-only)
+# -------------------------
+def block_demo(
+    user: models.User = Depends(get_current_user),
+) -> models.User:
+
+    if user.is_demo:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Demo account is read-only",
+        )
+
+    return user

@@ -26,7 +26,7 @@ def login(data: schemas.UserLogin, db: Session = Depends(get_db)):
 
     token = create_access_token(user.id)
 
-    return {"access_token": token}
+    return {"access_token": token, "token_type": "bearer"}
 
 
 # -------------------------
