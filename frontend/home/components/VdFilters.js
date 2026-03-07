@@ -2,8 +2,8 @@ class VdFilters extends HTMLElement {
   // ─── VARIABILI DIMENSIONI PILL ────────────────────────────
   // Modifica qui per regolare tutte le pill contemporaneamente
   static PILL = {
-    height: "22px",
-    paddingX: "0.4rem", // padding orizzontale pill tipo/stato
+    height: "18px",
+    paddingX: "0.3rem", // padding orizzontale pill tipo/stato
     paddingSort: "0 0.4rem", // padding sort buttons
     widthDefault: "34px", // larghezza bottone "orologio"
     fontSize: "0.6rem", // testo label
