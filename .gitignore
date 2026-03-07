@@ -11,3 +11,7 @@ venv/
 .DS_Store
 
 XDevNote
+
+
+backend/app/data/admin/
+backend/app/data/demo/
