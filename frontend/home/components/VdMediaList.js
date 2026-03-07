@@ -1,7 +1,7 @@
 import { fetchTmdbInfo } from "../../shared/infoService.js";
 import { updateMedia } from "../services/mediaService.js";
 
-// Cache in memoria: "title::type" → { posterUrl, year } | null
+// Cache in memoria: "title::type" → { posterUrl, year, rating } | null
 const posterCache = new Map();
 
 class VdMediaList extends HTMLElement {
@@ -48,7 +48,11 @@ class VdMediaList extends HTMLElement {
     } else {
       const result = await fetchTmdbInfo({ title, type });
       info = result
-        ? { posterUrl: result.posterUrl || null, year: result.year || null }
+        ? {
+            posterUrl: result.posterUrl || null,
+            year: result.year || null,
+            rating: result.rating || null,
+          }
         : null;
       posterCache.set(cacheKey, info);
     }
@@ -57,13 +61,55 @@ class VdMediaList extends HTMLElement {
 
     if (info.posterUrl) this._showPoster(img, info.posterUrl);
 
+    const row = img.closest(".list-group-item");
+    if (!row) return;
+
     if (info.year) {
-      const row = img.closest(".list-group-item");
-      if (!row) return;
       const dbYear = parseInt(row.dataset.year) || null;
-      const tmdbYear = info.year;
-      this._renderYearDiff(row, dbYear, tmdbYear);
+      this._renderYearDiff(row, dbYear, info.year);
     }
+
+    if (info.rating) {
+      this._renderTmdbRating(row, info.rating);
+      // Notifica home.js del rating TMDB
+      this.dispatchEvent(
+        new CustomEvent("tmdb-rating-loaded", {
+          detail: { id: row.dataset.id, tmdbRating: info.rating },
+          bubbles: true,
+        }),
+      );
+    }
+  }
+
+  // Fetch esplicito per tutti gli item — usato da home.js per sort TMDB
+  async fetchAllTmdbInfo(items) {
+    await Promise.all(
+      items.map(async (item) => {
+        const cacheKey = `${item.title}::${item.type}`;
+        if (posterCache.has(cacheKey)) return; // già in cache
+        const result = await fetchTmdbInfo({
+          title: item.title,
+          type: item.type,
+        });
+        const info = result
+          ? {
+              posterUrl: result.posterUrl || null,
+              year: result.year || null,
+              rating: result.rating || null,
+            }
+          : null;
+        posterCache.set(cacheKey, info);
+        // Notifica per ogni item fetchato
+        if (info?.rating) {
+          this.dispatchEvent(
+            new CustomEvent("tmdb-rating-loaded", {
+              detail: { id: item.id, tmdbRating: info.rating },
+              bubbles: true,
+            }),
+          );
+        }
+      }),
+    );
   }
 
   _showPoster(img, url) {
@@ -78,6 +124,27 @@ class VdMediaList extends HTMLElement {
     tempImg.src = url;
   }
 
+  _renderTmdbRating(row, tmdbRating) {
+    const ratingWrap = row.querySelector(".vd-rating-wrap");
+    if (!ratingWrap) return;
+
+    const dbRating = row.dataset.rating ? parseFloat(row.dataset.rating) : null;
+
+    const ourPart = dbRating
+      ? `<span>⭐ ${dbRating}</span><span style="color:#444; margin:0 0.1rem;">·</span>`
+      : "";
+
+    const tmdbPart = `
+<i class="bi bi-camera-video" style="font-size:0.6rem; color:#01b4e4; flex-shrink:0;"></i>
+        
+        <span style="color:#7ab8d4; font-size:0.72rem;">${tmdbRating}</span>
+      </span>
+    `;
+
+    ratingWrap.innerHTML =
+      ourPart + tmdbPart + `<span style="color:#333;">|</span>`;
+  }
+
   _renderYearDiff(row, dbYear, tmdbYear) {
     const yearWrap = row.querySelector(".vd-year-wrap");
     if (!yearWrap) return;
@@ -89,7 +156,6 @@ class VdMediaList extends HTMLElement {
       return;
     }
 
-    // Discrepanza trovata — notifica home.js
     this.dispatchEvent(
       new CustomEvent("year-mismatch-found", {
         detail: { id: row.dataset.id },
@@ -138,9 +204,8 @@ class VdMediaList extends HTMLElement {
           row.dataset.year = tmdbYear;
           yearWrap.innerHTML = `<span style="color:#333;">|</span><span>${tmdbYear}</span>`;
           const cacheKey = `${row.dataset.title}::${row.dataset.type}`;
-          if (posterCache.has(cacheKey)) {
+          if (posterCache.has(cacheKey))
             posterCache.get(cacheKey).year = tmdbYear;
-          }
           this.dispatchEvent(
             new CustomEvent("year-mismatch-resolved", {
               detail: { id: mediaId },
@@ -155,7 +220,7 @@ class VdMediaList extends HTMLElement {
       });
   }
 
-  render(items, currentUser, sort = "default") {
+  render(items, currentUser, sort = "default", tmdbRatings = new Map()) {
     // ── SORT ──────────────────────────────────────────────
     const sorted = [...items];
 
@@ -186,6 +251,24 @@ class VdMediaList extends HTMLElement {
         if (a.year == null) return 1;
         if (b.year == null) return -1;
         return a.year - b.year;
+      });
+    } else if (sort === "tmdb_rating_desc") {
+      sorted.sort((a, b) => {
+        const ra = tmdbRatings.get(String(a.id)) ?? null;
+        const rb = tmdbRatings.get(String(b.id)) ?? null;
+        if (rb == null && ra == null) return 0;
+        if (rb == null) return -1;
+        if (ra == null) return 1;
+        return rb - ra;
+      });
+    } else if (sort === "tmdb_rating_asc") {
+      sorted.sort((a, b) => {
+        const ra = tmdbRatings.get(String(a.id)) ?? null;
+        const rb = tmdbRatings.get(String(b.id)) ?? null;
+        if (ra == null && rb == null) return 0;
+        if (ra == null) return 1;
+        if (rb == null) return -1;
+        return ra - rb;
       });
     }
 
@@ -232,14 +315,10 @@ class VdMediaList extends HTMLElement {
       row.dataset.notes = item.notes || "";
 
       row.innerHTML = `
-        <!-- POSTER: flush left, full height -->
+        <!-- POSTER -->
         <div class="vd-poster-wrap" style="
-          flex-shrink:0;
-          width:44px;
-          align-self:stretch;
-          overflow:hidden;
-          background:#1e1e1e;
-          position:relative;
+          flex-shrink:0; width:44px; align-self:stretch;
+          overflow:hidden; background:#1e1e1e; position:relative;
         ">
           <div class="vd-poster-placeholder" style="
             width:100%; height:100%;
@@ -252,15 +331,8 @@ class VdMediaList extends HTMLElement {
             class="vd-poster-img"
             data-title="${(item.title || "").replace(/"/g, "&quot;")}"
             data-type="${item.type || ""}"
-            src=""
-            alt=""
-            style="
-              position:absolute; inset:0;
-              width:100%; height:100%;
-              object-fit:cover;
-              opacity:0;
-              transition:opacity 0.3s ease;
-            "
+            src="" alt=""
+            style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 0.3s ease;"
           />
         </div>
 
@@ -269,8 +341,10 @@ class VdMediaList extends HTMLElement {
           <div style="font-weight:600; color:#e6d5b8; font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
             ${item.title}
           </div>
-          <small style="color:#888; font-size:0.55rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-            ${item.rating ? `<span>⭐ ${item.rating}</span><span style="color:#333;">|</span>` : ""}
+          <small style="color:#888; font-size:0.75rem; display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap;">
+            <span class="vd-rating-wrap" style="display:inline-flex; align-items:center; gap:0.3rem;">
+              ${item.rating ? `<span>⭐ ${item.rating}</span><span style="color:#333;">|</span>` : ""}
+            </span>
             <span><i class="bi ${typeIcon[item.type] || "bi-grid"}"></i> ${item.type}</span>
             <span style="color:#333;">|</span>
             <span><i class="bi ${statusIcon[item.status] || "bi-circle"}"></i> ${item.status}</span>
@@ -282,28 +356,18 @@ class VdMediaList extends HTMLElement {
 
         <!-- ACTIONS -->
         <div class="d-flex align-items-center gap-2" style="flex-shrink:0; padding:0 0.5rem;">
-          <div
-            class="info-btn"
-            data-id="${item.id}"
-            data-title="${item.title}"
+          <div class="info-btn" data-id="${item.id}" data-title="${item.title}"
             style="cursor:pointer; font-size:1.1rem; color:#6c757d; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:0.2s;"
             onmouseover="this.style.background='#6c757d'; this.style.color='#fff';"
-            onmouseout="this.style.background='transparent'; this.style.color='#6c757d';"
-          >
+            onmouseout="this.style.background='transparent'; this.style.color='#6c757d';">
             <i class="bi bi-info-circle"></i>
           </div>
-
-          <div
-            class="delete-btn"
-            data-id="${item.id}"
-            data-title="${item.title}"
-            data-type="${item.type || ""}"
-            data-year="${item.year || ""}"
-            data-status="${item.status || ""}"
+          <div class="delete-btn"
+            data-id="${item.id}" data-title="${item.title}"
+            data-type="${item.type || ""}" data-year="${item.year || ""}" data-status="${item.status || ""}"
             style="cursor:pointer; font-size:1.1rem; color:#dc3545; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:0.2s;"
             onmouseover="this.style.background='#dc3545'; this.style.color='#fff';"
-            onmouseout="this.style.background='transparent'; this.style.color='#dc3545';"
-          >
+            onmouseout="this.style.background='transparent'; this.style.color='#dc3545';">
             <i class="bi bi-trash"></i>
           </div>
         </div>

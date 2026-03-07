@@ -18,7 +18,6 @@ function showToast(msg) {
 let allMedia = [];
 let currentUser = null;
 
-// Stato filtri corrente
 let currentFilters = {
   type: "all",
   status: "all",
@@ -28,6 +27,9 @@ let currentFilters = {
 
 // IDs con discrepanza anno DB vs TMDB
 let mismatchIds = new Set();
+
+// Map id → tmdbRating (popolata lazy o via batch fetch)
+let tmdbRatings = new Map();
 
 function refreshStats() {
   document.querySelector("#vnm-stats")?.computeFromMedia(allMedia);
@@ -43,17 +45,18 @@ function applyFilters() {
     return matchType && matchStatus && matchSearch;
   });
 
-  // Filtro speciale: solo quelli con discrepanza anno TMDB
   if (sort === "year_mismatch") {
     filtered = filtered.filter((item) => mismatchIds.has(String(item.id)));
   }
 
   const mediaList = document.querySelector("vd-media-list");
-  mediaList.render(filtered, currentUser, sort);
+  mediaList.render(filtered, currentUser, sort, tmdbRatings);
 }
 
 async function init() {
   const header = document.querySelector("vd-header");
+  const mediaList = document.querySelector("vd-media-list");
+  const filters = document.querySelector("vd-filters");
 
   // 👤 Carica utente
   currentUser = await fetchCurrentUser();
@@ -65,20 +68,32 @@ async function init() {
   refreshStats();
 
   // 🎛 Filtri
-  document.addEventListener("filters-change", (e) => {
+  document.addEventListener("filters-change", async (e) => {
+    const newSort = e.detail.sort;
     currentFilters = { ...currentFilters, ...e.detail };
+
+    // Sort TMDB: batch fetch tutti i rating non in cache
+    if (newSort === "tmdb_rating_desc" || newSort === "tmdb_rating_asc") {
+      filters?.setTmdbSortLoading(true);
+      await mediaList.fetchAllTmdbInfo(allMedia);
+      filters?.setTmdbSortLoading(false);
+    }
+
     applyFilters();
   });
 
-  // 🔴 Accumula discrepanze anno trovate dal VdMediaList
+  // 🔴 Rating TMDB caricato lazy (scroll normale)
+  document.addEventListener("tmdb-rating-loaded", (e) => {
+    tmdbRatings.set(String(e.detail.id), e.detail.tmdbRating);
+  });
+
+  // 🔴 Discrepanze anno
   document.addEventListener("year-mismatch-found", (e) => {
     mismatchIds.add(String(e.detail.id));
   });
 
-  // ✅ Rimuovi discrepanza quando aggiornata
   document.addEventListener("year-mismatch-resolved", (e) => {
     mismatchIds.delete(String(e.detail.id));
-    // Se siamo nel filtro mismatch, riapplica per rimuovere la riga
     if (currentFilters.sort === "year_mismatch") applyFilters();
   });
 
@@ -88,6 +103,7 @@ async function init() {
       await createMedia(e.detail);
       allMedia = await fetchMedia();
       mismatchIds = new Set();
+      tmdbRatings = new Map();
       applyFilters();
       refreshStats();
     } catch (err) {
@@ -111,6 +127,7 @@ async function init() {
       await updateMedia(e.detail.id, e.detail);
       allMedia = await fetchMedia();
       mismatchIds = new Set();
+      tmdbRatings = new Map();
       applyFilters();
       refreshStats();
       showToast("Modificato con successo");
@@ -157,6 +174,7 @@ async function init() {
         await deleteMedia(pendingDeleteId);
         allMedia = await fetchMedia();
         mismatchIds = new Set();
+        tmdbRatings = new Map();
         applyFilters();
         refreshStats();
         showToast("Eliminato con successo");
