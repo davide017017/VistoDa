@@ -1,18 +1,204 @@
 class VdMediaModal extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
+      <style>
+        #mediaModal .modal-dialog {
+          max-width: 420px;
+        }
+
+        #mediaModal .modal-content {
+          background: #111;
+          color: #eaeaea;
+          border: 1px solid #222;
+          border-radius: 10px;
+          overflow: hidden;
+        }
+
+        #mediaModal .modal-header {
+          padding: 0.65rem 1rem 0.5rem;
+          border-bottom: 1px solid #1e1e1e;
+        }
+
+        #mediaModal .modal-body {
+          padding: 0.65rem 1rem;
+        }
+
+        #mediaModal .modal-footer {
+          padding: 0.5rem 1rem 0.65rem;
+          border-top: 1px solid #1e1e1e;
+        }
+
+        #mediaModal .modal-title {
+          font-size: 0.78rem;
+          font-family: 'JetBrains Mono', 'Fira Mono', monospace;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #8c7a5b;
+        }
+
+        #mediaModal .vd-label {
+          display: block;
+          font-size: 0.65rem;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #555;
+          margin-bottom: 0.3rem;
+        }
+
+        #mediaModal .vd-label span {
+          color: #383838;
+          font-size: 0.6rem;
+          text-transform: none;
+          letter-spacing: 0;
+        }
+
+        #mediaModal .vd-field {
+          margin-bottom: 0.55rem;
+        }
+
+        #mediaModal .form-control {
+          background: #0d0d0d;
+          border: 1px solid #222;
+          color: #eaeaea;
+          font-size: 0.8rem;
+          padding: 0.3rem 0.6rem;
+          border-radius: 5px;
+          transition: border-color 0.2s;
+        }
+
+        #mediaModal .form-control:focus {
+          background: #0d0d0d;
+          border-color: #8c7a5b;
+          color: #eaeaea;
+          box-shadow: 0 0 0 2px rgba(140,122,91,0.12);
+        }
+
+        #mediaModal textarea.form-control {
+          resize: none;
+          rows: 2;
+        }
+
+        /* Pills */
+        #mediaModal .pill-btn {
+          border: 1px solid #222;
+          color: #666;
+          background: #0d0d0d;
+          border-radius: 20px;
+          font-size: 0.62rem;
+          padding: 0.22rem 0.5rem;
+          white-space: nowrap;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          flex: 1;
+          justify-content: center;
+        }
+
+        #mediaModal .pill-btn i {
+          font-size: 0.75rem;
+        }
+
+        #mediaModal .pill-btn:hover {
+          border-color: #444;
+          color: #aaa;
+        }
+
+        #mediaModal .pill-btn.active {
+          background: #8c7a5b;
+          color: #0f0f0f;
+          border-color: #8c7a5b;
+          box-shadow: 0 0 8px rgba(140,122,91,0.35);
+          transform: scale(1.03);
+          font-weight: 600;
+        }
+
+        /* Counter row */
+        #mediaModal .vd-counter {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        #mediaModal .vd-counter .form-control {
+          text-align: center;
+          flex: 1;
+        }
+
+        #mediaModal .vd-counter .btn-counter {
+          width: 30px;
+          height: 30px;
+          padding: 0;
+          border: 1px solid #222;
+          background: #0d0d0d;
+          color: #666;
+          border-radius: 5px;
+          font-size: 1rem;
+          line-height: 1;
+          flex-shrink: 0;
+          transition: all 0.2s;
+        }
+
+        #mediaModal .vd-counter .btn-counter:hover {
+          border-color: #8c7a5b;
+          color: #8c7a5b;
+        }
+
+        /* Footer buttons */
+        #mediaModal .btn-cancel {
+          background: transparent;
+          border: 1px solid #2a2a2a;
+          color: #555;
+          font-size: 0.75rem;
+          padding: 0.3rem 1.2rem;
+          border-radius: 5px;
+          transition: all 0.2s;
+        }
+
+        #mediaModal .btn-cancel:hover {
+          border-color: #555;
+          color: #aaa;
+        }
+
+        #mediaModal .btn-save {
+          background: #8c7a5b;
+          border: none;
+          color: #0f0f0f;
+          font-weight: 700;
+          font-size: 0.75rem;
+          padding: 0.3rem 1.4rem;
+          border-radius: 5px;
+          letter-spacing: 0.04em;
+          transition: all 0.2s;
+        }
+
+        #mediaModal .btn-save:hover {
+          background: #a08e6e;
+          box-shadow: 0 0 10px rgba(140,122,91,0.3);
+        }
+
+        #mediaModal .btn-close {
+          filter: invert(0.4);
+          width: 0.7em;
+          height: 0.7em;
+        }
+
+        #mediaModal .pill-row {
+          display: flex;
+          gap: 6px;
+          width: 100%;
+        }
+      </style>
+
       <div class="modal fade" id="mediaModal" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content"
-               style="background:#1a1a1a; color:#eaeaea; border:1px solid #2a2a2a;">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
 
             <!-- HEADER -->
             <div class="modal-header border-0 justify-content-center position-relative">
-              <h5 id="mediaModalTitle" class="modal-title text-center w-100"
-                  style="color:#e6d5b8;">
-              </h5>
+              <h5 id="mediaModalTitle" class="modal-title text-center w-100"></h5>
               <button type="button"
-                      class="btn-close btn-close-white position-absolute end-0 me-3"
+                      class="btn-close position-absolute end-0 me-3"
                       data-bs-dismiss="modal">
               </button>
             </div>
@@ -20,22 +206,15 @@ class VdMediaModal extends HTMLElement {
             <div class="modal-body">
 
               <!-- TITOLO -->
-              <div class="mb-3">
-                <label class="form-label">
-                  Titolo <small class="text-secondary">(obbligatorio)</small>
-                </label>
-                <input id="mediaTitle"
-                       class="form-control"
-                       style="background:#141414; border:1px solid #2a2a2a; color:#eaeaea;"
-                       placeholder="Es. Inception" />
+              <div class="vd-field">
+                <label class="vd-label">Titolo <span>(obbligatorio)</span></label>
+                <input id="mediaTitle" class="form-control" placeholder="Es. Inception" />
               </div>
 
               <!-- TIPO -->
-              <div class="mb-3">
-                <label class="form-label">
-                  Tipo <small class="text-secondary">(obbligatorio)</small>
-                </label>
-                <div id="mediaTypePills" class="d-flex w-100 gap-2">
+              <div class="vd-field">
+                <label class="vd-label">Tipo <span>(obbligatorio)</span></label>
+                <div id="mediaTypePills" class="pill-row">
                   ${this.renderPill("film", "Film", "bi-film")}
                   ${this.renderPill("serie", "Serie", "bi-tv")}
                   ${this.renderPill("anime", "Anime", "bi-play-circle")}
@@ -44,96 +223,50 @@ class VdMediaModal extends HTMLElement {
               </div>
 
               <!-- STATUS -->
-              <div class="mb-3">
-                <label class="form-label">
-                  Stato <small class="text-secondary">(obbligatorio)</small>
-                </label>
-                <div id="mediaStatusPills" class="d-flex w-100 gap-2">
+              <div class="vd-field">
+                <label class="vd-label">Stato <span>(obbligatorio)</span></label>
+                <div id="mediaStatusPills" class="pill-row">
                   ${this.renderPill("completed", "Visto", "bi-check")}
                   ${this.renderPill("watching", "In corso", "bi-eye")}
                   ${this.renderPill("recommended", "Consigliati", "bi-star")}
                 </div>
               </div>
 
-              <!-- RATING -->
-              <div class="mb-3">
-                <label class="form-label">
-                  Rating (1–10) <small class="text-secondary">(facoltativo)</small>
-                </label>
-                <div class="row g-2 text-center">
-                  <div class="col">
-                    <button id="mediaRatingMinus"
-                            class="btn btn-outline-secondary w-100">−</button>
-                  </div>
-                  <div class="col">
-                    <input id="mediaRating"
-                           type="number"
-                           step="0.1"
-                           min="1"
-                           max="10"
-                           class="form-control text-center"
-                           style="background:#141414; border:1px solid #2a2a2a; color:#eaeaea;"
-                           placeholder="-" />
-                  </div>
-                  <div class="col">
-                    <button id="mediaRatingPlus"
-                            class="btn btn-outline-secondary w-100">+</button>
+              <!-- RATING + ANNO inline -->
+              <div class="vd-field d-flex gap-3">
+                <div style="flex:1">
+                  <label class="vd-label">Rating <span>(1–10)</span></label>
+                  <div class="vd-counter">
+                    <button id="mediaRatingMinus" class="btn-counter">−</button>
+                    <input id="mediaRating" type="number" step="0.1" min="1" max="10"
+                           class="form-control" placeholder="–" />
+                    <button id="mediaRatingPlus"  class="btn-counter">+</button>
                   </div>
                 </div>
-              </div>
-
-              <!-- ANNO -->
-              <div class="mb-3">
-                <label class="form-label">
-                  Anno <small class="text-secondary">(facoltativo)</small>
-                </label>
-                <div class="row g-2 text-center">
-                  <div class="col">
-                    <button id="mediaYearMinus"
-                            class="btn btn-outline-secondary w-100">−</button>
-                  </div>
-                  <div class="col">
-                    <input id="mediaYear"
-                           type="number"
-                           min="1900"
-                           max="2100"
-                           class="form-control text-center"
-                           style="background:#141414; border:1px solid #2a2a2a; color:#eaeaea;"
-                           placeholder="-" />
-                  </div>
-                  <div class="col">
-                    <button id="mediaYearPlus"
-                            class="btn btn-outline-secondary w-100">+</button>
+                <div style="flex:1">
+                  <label class="vd-label">Anno</label>
+                  <div class="vd-counter">
+                    <button id="mediaYearMinus" class="btn-counter">−</button>
+                    <input id="mediaYear" type="number" min="1900" max="2100"
+                           class="form-control" placeholder="–" />
+                    <button id="mediaYearPlus"  class="btn-counter">+</button>
                   </div>
                 </div>
               </div>
 
               <!-- NOTE -->
-              <div class="mb-3">
-                <label class="form-label">
-                  Note <small class="text-secondary">(facoltativo)</small>
-                </label>
-                <textarea id="mediaNotes"
-                          class="form-control"
-                          rows="3"
-                          style="background:#141414; border:1px solid #2a2a2a; color:#eaeaea;"
+              <div class="vd-field mb-0">
+                <label class="vd-label">Note <span>(facoltativo)</span></label>
+                <textarea id="mediaNotes" class="form-control" rows="2"
                           placeholder="Scrivi qualcosa..."></textarea>
               </div>
 
             </div>
 
             <!-- FOOTER -->
-            <div class="modal-footer border-0 justify-content-center">
-              <button type="button"
-                      class="btn btn-outline-secondary px-4"
-                      data-bs-dismiss="modal">
-                Annulla
-              </button>
-              <button type="button"
-                      id="mediaSave"
-                      class="btn px-4"
-                      style="background-color:#8c7a5b; color:#0f0f0f; font-weight:600;">
-              </button>
+            <div class="modal-footer border-0 justify-content-center gap-2">
+              <button type="button" class="btn-cancel" data-bs-dismiss="modal">Annulla</button>
+              <button type="button" id="mediaSave" class="btn-save"></button>
             </div>
 
           </div>
@@ -146,19 +279,8 @@ class VdMediaModal extends HTMLElement {
 
   renderPill(value, label, icon) {
     return `
-      <button type="button"
-              class="pill-btn btn flex-fill d-flex align-items-center justify-content-center gap-2 rounded-pill"
-              data-value="${value}"
-              style="
-                border:1px solid #2a2a2a;
-                color:#aaa;
-                background:#141414;
-                white-space:nowrap;
-                transition: all 0.25s ease;
-                font-size:0.65rem;
-                padding:0.25rem 0.5rem;
-              ">
-        <i class="bi ${icon}" style="font-size:0.9rem;"></i>
+      <button type="button" class="pill-btn" data-value="${value}">
+        <i class="bi ${icon}"></i>
         <span>${label}</span>
       </button>
     `;
@@ -188,15 +310,12 @@ class VdMediaModal extends HTMLElement {
       const plus = this.querySelector(plusId);
 
       minus.addEventListener("click", () => {
-        let value = parseFloat(input.value || min || 0);
-        value = Math.max(min, value - step);
-        input.value = value;
+        let v = parseFloat(input.value || min);
+        input.value = Math.max(min, v - step);
       });
-
       plus.addEventListener("click", () => {
-        let value = parseFloat(input.value || min || 0);
-        value = Math.min(max, value + step);
-        input.value = value;
+        let v = parseFloat(input.value || min);
+        input.value = Math.min(max, v + step);
       });
     };
 
@@ -253,18 +372,10 @@ class VdMediaModal extends HTMLElement {
   }
 
   _selectPill(containerId, activeBtn) {
-    this.querySelectorAll(`#${containerId} .pill-btn`).forEach((b) => {
-      b.style.background = "#141414";
-      b.style.color = "#aaa";
-      b.style.border = "1px solid #2a2a2a";
-      b.style.boxShadow = "none";
-      b.style.transform = "scale(1)";
-    });
-    activeBtn.style.background = "#8c7a5b";
-    activeBtn.style.color = "#0f0f0f";
-    activeBtn.style.border = "1px solid #8c7a5b";
-    activeBtn.style.boxShadow = "0 0 8px rgba(140,122,91,0.5)";
-    activeBtn.style.transform = "scale(1.03)";
+    this.querySelectorAll(`#${containerId} .pill-btn`).forEach((b) =>
+      b.classList.remove("active"),
+    );
+    activeBtn.classList.add("active");
   }
 
   _resetFields() {
@@ -275,13 +386,9 @@ class VdMediaModal extends HTMLElement {
     this._selectedType = null;
     this._selectedStatus = null;
     ["mediaTypePills", "mediaStatusPills"].forEach((id) => {
-      this.querySelectorAll(`#${id} .pill-btn`).forEach((b) => {
-        b.style.background = "#141414";
-        b.style.color = "#aaa";
-        b.style.border = "1px solid #2a2a2a";
-        b.style.boxShadow = "none";
-        b.style.transform = "scale(1)";
-      });
+      this.querySelectorAll(`#${id} .pill-btn`).forEach((b) =>
+        b.classList.remove("active"),
+      );
     });
   }
 
@@ -308,13 +415,12 @@ class VdMediaModal extends HTMLElement {
     this._selectedStatus = item.status || null;
 
     const typeBtn = this.querySelector(
-      `#mediaTypePills [data-value="${item.type}"]`,
+      `#mediaTypePills   [data-value="${item.type}"]`,
     );
-    if (typeBtn) this._selectPill("mediaTypePills", typeBtn);
-
     const statusBtn = this.querySelector(
       `#mediaStatusPills [data-value="${item.status}"]`,
     );
+    if (typeBtn) this._selectPill("mediaTypePills", typeBtn);
     if (statusBtn) this._selectPill("mediaStatusPills", statusBtn);
 
     this._modal.show();

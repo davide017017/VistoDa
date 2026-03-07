@@ -53,6 +53,16 @@ class TokenPayload(BaseModel):
     sub: Optional[int] = None
 
 
+# Input modifica nickname
+class NicknameUpdate(BaseModel):
+    nickname: str = Field(min_length=1, max_length=30)
+
+
+# Output modifica nickname
+class NicknameOut(BaseModel):
+    nickname: str
+
+
 # =========================
 # MEDIA
 # =========================

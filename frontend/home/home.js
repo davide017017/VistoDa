@@ -5,7 +5,7 @@ import {
   updateMedia,
   deleteMedia,
 } from "./services/mediaService.js";
-import { fetchCurrentUser } from "./services/userService.js";
+import { fetchCurrentUser, updateNickname } from "./services/userService.js";
 
 requireAuth();
 
@@ -18,6 +18,10 @@ function showToast(msg) {
 let allMedia = [];
 let currentUser = null;
 
+function refreshStats() {
+  document.querySelector("#vnm-stats")?.computeFromMedia(allMedia);
+}
+
 async function init() {
   const header = document.querySelector("vd-header");
   const mediaList = document.querySelector("vd-media-list");
@@ -29,6 +33,7 @@ async function init() {
   // 🎬 Carica media
   allMedia = await fetchMedia();
   mediaList.render(allMedia, currentUser);
+  refreshStats();
 
   // 🎛 Filtri
   document.addEventListener("filters-change", (e) => {
@@ -50,6 +55,7 @@ async function init() {
       await createMedia(e.detail);
       allMedia = await fetchMedia();
       mediaList.render(allMedia, currentUser);
+      refreshStats();
     } catch (err) {
       showToast(err.message);
     }
@@ -71,8 +77,25 @@ async function init() {
       await updateMedia(e.detail.id, e.detail);
       allMedia = await fetchMedia();
       mediaList.render(allMedia, currentUser);
+      refreshStats();
       showToast("Modificato con successo");
     } catch (err) {
+      showToast(err.message);
+    }
+  });
+
+  // ✏️ Nickname
+  const nickModal = document.querySelector("vd-nick-name-modal");
+
+  document.addEventListener("update-nickname", async (e) => {
+    try {
+      const updated = await updateNickname(e.detail.nickname);
+      currentUser = { ...currentUser, nickname: updated.nickname };
+      header.setUser(currentUser);
+      nickModal.confirmSuccess(updated.nickname);
+      showToast("Nickname aggiornato");
+    } catch (err) {
+      nickModal.confirmError();
       showToast(err.message);
     }
   });
@@ -99,6 +122,7 @@ async function init() {
         await deleteMedia(pendingDeleteId);
         allMedia = await fetchMedia();
         mediaList.render(allMedia, currentUser);
+        refreshStats();
         showToast("Eliminato con successo");
       } catch (err) {
         showToast(err.message);

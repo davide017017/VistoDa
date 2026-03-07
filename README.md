@@ -28,9 +28,7 @@
 
 ---
 
-<!-- Screenshot preview — replace with actual image path after upload -->
-
-![Preview](./screenshot.png)
+[![Preview](./screenshot.png)](https://vistoda.netlify.app/)
 
 ---
 
