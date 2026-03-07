@@ -28,7 +28,7 @@ def get_user_media(db: Session, user_id: int):
     return (
         db.query(models.Media)
         .filter(models.Media.user_id == user_id)
-        .order_by(models.Media.updated_at.desc(), models.Media.year.desc())
+        .order_by(models.Media.created_at.desc())
         .all()
     )
 

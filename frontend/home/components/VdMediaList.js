@@ -20,7 +20,41 @@ class VdMediaList extends HTMLElement {
     `;
   }
 
-  render(items, currentUser) {
+  render(items, currentUser, sort = "default") {
+    // ── SORT ──────────────────────────────────────────────
+    const sorted = [...items];
+
+    if (sort === "rating_desc") {
+      sorted.sort((a, b) => {
+        if (b.rating == null && a.rating == null) return 0;
+        if (b.rating == null) return -1;
+        if (a.rating == null) return 1;
+        return b.rating - a.rating;
+      });
+    } else if (sort === "rating_asc") {
+      sorted.sort((a, b) => {
+        if (a.rating == null && b.rating == null) return 0;
+        if (a.rating == null) return 1;
+        if (b.rating == null) return -1;
+        return a.rating - b.rating;
+      });
+    } else if (sort === "year_desc") {
+      sorted.sort((a, b) => {
+        if (b.year == null && a.year == null) return 0;
+        if (b.year == null) return -1;
+        if (a.year == null) return 1;
+        return b.year - a.year;
+      });
+    } else if (sort === "year_asc") {
+      sorted.sort((a, b) => {
+        if (a.year == null && b.year == null) return 0;
+        if (a.year == null) return 1;
+        if (b.year == null) return -1;
+        return a.year - b.year;
+      });
+    }
+
+    // ── RENDER ────────────────────────────────────────────
     const container = this.querySelector("#mediaContainer");
     container.innerHTML = "";
 
@@ -37,7 +71,7 @@ class VdMediaList extends HTMLElement {
       recommended: "bi-star",
     };
 
-    if (!items.length) {
+    if (!sorted.length) {
       container.innerHTML = `
         <div class="text-center text-secondary py-4">
           Nessun contenuto trovato
@@ -46,73 +80,70 @@ class VdMediaList extends HTMLElement {
       return;
     }
 
-    items.forEach((item) => {
-      container.innerHTML += `
-        <div class="list-group-item d-flex justify-content-between align-items-center"
-          style="background:#141414; color:#eaeaea; border:1px solid #2a2a2a; cursor:pointer; padding-top:0.4rem; padding-bottom:0.4rem;"             data-id="${item.id}"
-            data-title="${item.title || ""}"
-            data-type="${item.type || ""}"
-            data-status="${item.status || ""}"
-            data-year="${item.year || ""}"
-            data-rating="${item.rating || ""}"
-            data-notes="${item.notes || ""}">
+    // ── DocumentFragment: un solo reflow alla fine ────────
+    const fragment = document.createDocumentFragment();
 
-          <div>
-            <div style="font-weight:600; color:#e6d5b8; font-size:0.85rem;">
-              ${item.title}
-            </div>
+    sorted.forEach((item) => {
+      const row = document.createElement("div");
+      row.className =
+        "list-group-item d-flex justify-content-between align-items-center";
+      row.style.cssText =
+        "background:#141414; color:#eaeaea; border:1px solid #2a2a2a; cursor:pointer; padding-top:0.4rem; padding-bottom:0.4rem;";
+      row.dataset.id = item.id;
+      row.dataset.title = item.title || "";
+      row.dataset.type = item.type || "";
+      row.dataset.status = item.status || "";
+      row.dataset.year = item.year || "";
+      row.dataset.rating = item.rating || "";
+      row.dataset.notes = item.notes || "";
 
-            <small style="color:#888; font-size:0.75rem; display:flex; align-items:center; gap:0.85rem; flex-wrap:wrap;">
-              ${
-                item.rating
-                  ? `<span>⭐ ${item.rating}</span>
-              <span style="color:#333;">|</span>`
-                  : ""
-              }
-              <span><i class="bi ${typeIcon[item.type] || "bi-grid"}"></i> ${item.type}</span>
-              <span style="color:#333;">|</span>
-              <span><i class="bi ${statusIcon[item.status] || "bi-circle"}"></i> ${item.status}</span>
-              ${
-                item.year
-                  ? `
-              <span style="color:#333;">|</span><span>${item.year}</span>`
-                  : ""
-              }
-            </small>
+      row.innerHTML = `
+        <div>
+          <div style="font-weight:600; color:#e6d5b8; font-size:0.85rem;">
+            ${item.title}
+          </div>
+          <small style="color:#888; font-size:0.75rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+            ${item.rating ? `<span>⭐ ${item.rating}</span><span style="color:#333;">|</span>` : ""}
+            <span><i class="bi ${typeIcon[item.type] || "bi-grid"}"></i> ${item.type}</span>
+            <span style="color:#333;">|</span>
+            <span><i class="bi ${statusIcon[item.status] || "bi-circle"}"></i> ${item.status}</span>
+            ${item.year ? `<span style="color:#333;">|</span><span>${item.year}</span>` : ""}
+          </small>
+        </div>
 
-          </div>   
-          <div class="d-flex align-items-center gap-2">
-
-            <div
-              class="info-btn"
-              data-id="${item.id}"
-              data-title="${item.title}"
-              style="cursor:pointer; font-size:1.1rem; color:#6c757d; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:0.2s;"
-              onmouseover="this.style.background='#6c757d'; this.style.color='#fff';"
-              onmouseout="this.style.background='transparent'; this.style.color='#6c757d';"
-            >
-              <i class="bi bi-info-circle"></i>
-            </div>
-
-            <div
-              style="cursor:pointer; font-size:1.1rem; color:#dc3545; width:26px; height:26px; ..."
-              onmouseover="this.style.background='#dc3545'; this.style.color='#fff';"
-              onmouseout="this.style.background='transparent'; this.style.color='#dc3545';"
-              class="delete-btn"
-              data-id="${item.id}"
-              data-title="${item.title}"
-              data-type="${item.type || ""}"
-              data-year="${item.year || ""}"
-              data-status="${item.status || ""}"
-            >
-              <i class="bi bi-trash"></i>
-            </div>
-
+        <div class="d-flex align-items-center gap-2">
+          <div
+            class="info-btn"
+            data-id="${item.id}"
+            data-title="${item.title}"
+            style="cursor:pointer; font-size:1.1rem; color:#6c757d; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:0.2s;"
+            onmouseover="this.style.background='#6c757d'; this.style.color='#fff';"
+            onmouseout="this.style.background='transparent'; this.style.color='#6c757d';"
+          >
+            <i class="bi bi-info-circle"></i>
           </div>
 
+          <div
+            class="delete-btn"
+            data-id="${item.id}"
+            data-title="${item.title}"
+            data-type="${item.type || ""}"
+            data-year="${item.year || ""}"
+            data-status="${item.status || ""}"
+            style="cursor:pointer; font-size:1.1rem; color:#dc3545; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:0.2s;"
+            onmouseover="this.style.background='#dc3545'; this.style.color='#fff';"
+            onmouseout="this.style.background='transparent'; this.style.color='#dc3545';"
+          >
+            <i class="bi bi-trash"></i>
+          </div>
         </div>
       `;
+
+      fragment.appendChild(row);
     });
+
+    // Un solo inserimento nel DOM
+    container.appendChild(fragment);
 
     this.attachEvents(currentUser);
   }
@@ -147,7 +178,6 @@ class VdMediaList extends HTMLElement {
     container.querySelectorAll(".delete-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-
         this.dispatchEvent(
           new CustomEvent("delete-media-request", {
             detail: {

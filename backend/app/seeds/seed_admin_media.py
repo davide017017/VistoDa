@@ -31,7 +31,7 @@ def seed_admin_media() -> None:
 
             for item in media_list:
                 rating = item.get("rating")
-                updated_at_str = item.get("updated_at")
+                created_at_str = item.get("created_at")  # ← era updated_at
                 db.add(
                     Media(
                         user_id=user.id,
@@ -41,14 +41,14 @@ def seed_admin_media() -> None:
                         year=item.get("year"),
                         rating=Decimal(str(rating)) if rating is not None else None,
                         notes=item.get("notes"),
-                        updated_at=(
-                            datetime.fromisoformat(updated_at_str)
-                            if updated_at_str
+                        created_at=(  # ← era updated_at
+                            datetime.fromisoformat(created_at_str)
+                            if created_at_str
                             else None
                         ),
                     )
                 )
-                count += 1
+            count += 1
 
         db.commit()
         print(f"Seed OK: {count} admin media created")

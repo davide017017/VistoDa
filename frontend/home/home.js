@@ -18,13 +18,34 @@ function showToast(msg) {
 let allMedia = [];
 let currentUser = null;
 
+// Stato filtri corrente
+let currentFilters = {
+  type: "all",
+  status: "all",
+  search: "",
+  sort: "default",
+};
+
 function refreshStats() {
   document.querySelector("#vnm-stats")?.computeFromMedia(allMedia);
 }
 
+function applyFilters() {
+  const { type, status, search, sort } = currentFilters;
+
+  const filtered = allMedia.filter((item) => {
+    const matchType = type === "all" || item.type === type;
+    const matchStatus = status === "all" || item.status === status;
+    const matchSearch = !search || item.title.toLowerCase().includes(search);
+    return matchType && matchStatus && matchSearch;
+  });
+
+  const mediaList = document.querySelector("vd-media-list");
+  mediaList.render(filtered, currentUser, sort);
+}
+
 async function init() {
   const header = document.querySelector("vd-header");
-  const mediaList = document.querySelector("vd-media-list");
 
   // 👤 Carica utente
   currentUser = await fetchCurrentUser();
@@ -32,21 +53,13 @@ async function init() {
 
   // 🎬 Carica media
   allMedia = await fetchMedia();
-  mediaList.render(allMedia, currentUser);
+  applyFilters();
   refreshStats();
 
   // 🎛 Filtri
   document.addEventListener("filters-change", (e) => {
-    const { type, status, search } = e.detail;
-
-    const filtered = allMedia.filter((item) => {
-      const matchType = type === "all" || item.type === type;
-      const matchStatus = status === "all" || item.status === status;
-      const matchSearch = !search || item.title.toLowerCase().includes(search);
-      return matchType && matchStatus && matchSearch;
-    });
-
-    mediaList.render(filtered, currentUser);
+    currentFilters = { ...currentFilters, ...e.detail };
+    applyFilters();
   });
 
   // ➕ Create media
@@ -54,7 +67,7 @@ async function init() {
     try {
       await createMedia(e.detail);
       allMedia = await fetchMedia();
-      mediaList.render(allMedia, currentUser);
+      applyFilters();
       refreshStats();
     } catch (err) {
       showToast(err.message);
@@ -76,7 +89,7 @@ async function init() {
     try {
       await updateMedia(e.detail.id, e.detail);
       allMedia = await fetchMedia();
-      mediaList.render(allMedia, currentUser);
+      applyFilters();
       refreshStats();
       showToast("Modificato con successo");
     } catch (err) {
@@ -121,7 +134,7 @@ async function init() {
       try {
         await deleteMedia(pendingDeleteId);
         allMedia = await fetchMedia();
-        mediaList.render(allMedia, currentUser);
+        applyFilters();
         refreshStats();
         showToast("Eliminato con successo");
       } catch (err) {
