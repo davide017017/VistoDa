@@ -141,7 +141,6 @@ class VdMediaList extends HTMLElement {
           if (posterCache.has(cacheKey)) {
             posterCache.get(cacheKey).year = tmdbYear;
           }
-          // Notifica che la discrepanza è stata risolta
           this.dispatchEvent(
             new CustomEvent("year-mismatch-resolved", {
               detail: { id: mediaId },
@@ -221,9 +220,9 @@ class VdMediaList extends HTMLElement {
     sorted.forEach((item) => {
       const row = document.createElement("div");
       row.className =
-        "list-group-item d-flex justify-content-between align-items-center";
+        "list-group-item d-flex justify-content-between align-items-stretch";
       row.style.cssText =
-        "background:#141414; color:#eaeaea; border:1px solid #2a2a2a; cursor:pointer; padding-top:0.4rem; padding-bottom:0.4rem; gap:0.6rem;";
+        "background:#141414; color:#eaeaea; border:1px solid #2a2a2a; cursor:pointer; padding:0; gap:0; overflow:hidden;";
       row.dataset.id = item.id;
       row.dataset.title = item.title || "";
       row.dataset.type = item.type || "";
@@ -233,11 +232,11 @@ class VdMediaList extends HTMLElement {
       row.dataset.notes = item.notes || "";
 
       row.innerHTML = `
-        <!-- POSTER -->
+        <!-- POSTER: flush left, full height -->
         <div class="vd-poster-wrap" style="
           flex-shrink:0;
-          width:40px; height:40px;
-          border-radius:4px;
+          width:44px;
+          align-self:stretch;
           overflow:hidden;
           background:#1e1e1e;
           position:relative;
@@ -266,11 +265,11 @@ class VdMediaList extends HTMLElement {
         </div>
 
         <!-- INFO -->
-        <div style="flex:1; min-width:0;">
+        <div style="flex:1; min-width:0; padding:0.4rem 0.5rem; display:flex; flex-direction:column; justify-content:center;">
           <div style="font-weight:600; color:#e6d5b8; font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
             ${item.title}
           </div>
-          <small style="color:#888; font-size:0.75rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+          <small style="color:#888; font-size:0.55rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
             ${item.rating ? `<span>⭐ ${item.rating}</span><span style="color:#333;">|</span>` : ""}
             <span><i class="bi ${typeIcon[item.type] || "bi-grid"}"></i> ${item.type}</span>
             <span style="color:#333;">|</span>
@@ -282,7 +281,7 @@ class VdMediaList extends HTMLElement {
         </div>
 
         <!-- ACTIONS -->
-        <div class="d-flex align-items-center gap-2" style="flex-shrink:0;">
+        <div class="d-flex align-items-center gap-2" style="flex-shrink:0; padding:0 0.5rem;">
           <div
             class="info-btn"
             data-id="${item.id}"
