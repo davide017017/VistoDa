@@ -12,6 +12,14 @@ if _database_url is None:
 
 DATABASE_URL: str = _database_url
 
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    connect_args={
+        "connect_timeout": 10,
+    },
+    pool_timeout=10,
+    pool_recycle=300,
+)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 Base = declarative_base()

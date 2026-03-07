@@ -11,7 +11,7 @@ class VdFilters extends HTMLElement {
               scrollbar-width:none;
               -ms-overflow-style:none;
             ">
-          ${this.renderPill("all", "Tutti", "bi-grid")}
+          ${this.renderPill("all", "", "bi-grid")}
           ${this.renderPill("film", "Film", "bi-film")}
           ${this.renderPill("serie", "Serie", "bi-tv")}
           ${this.renderPill("anime", "Anime", "bi-play-circle")}
@@ -20,7 +20,7 @@ class VdFilters extends HTMLElement {
 
         <!-- FILTRO STATO -->
         <div id="statusFilters" class="d-flex w-100 gap-2">
-          ${this.renderPill("all", "Tutti", "bi-grid")}
+          ${this.renderPill("all", "", "bi-grid")}
           ${this.renderPill("completed", "Visti", "bi-check")}
           ${this.renderPill("watching", "In corso", "bi-eye")}
           ${this.renderPill("recommended", "Consigliati", "bi-star")}
@@ -69,7 +69,7 @@ class VdFilters extends HTMLElement {
   renderPill(value, label, icon) {
     return `
     <button type="button"
-            class="pill-btn btn d-flex align-items-center justify-content-center gap-2 rounded-pill"
+            class="pill-btn btn d-flex align-items-center justify-content-center rounded-pill"
             data-value="${value}"
             style="
               flex: 0 0 auto;
@@ -83,12 +83,10 @@ class VdFilters extends HTMLElement {
               font-size:0.85rem;
               padding:0.4rem 0.6rem;
             ">
-        <i class="bi ${icon}" style="font-size:0.85rem; flex-shrink:0;"></i>
-        <span style="overflow:hidden; text-overflow:ellipsis;">
-          ${label}
-        </span>
-    </button>
-  `;
+          <i class="bi ${icon}" style="font-size:0.85rem; flex-shrink:0;"></i>
+          ${label ? `<span style="margin-left:0.4rem; overflow:hidden; text-overflow:ellipsis;">${label}</span>` : ""}
+      </button>
+    `;
   }
 
   activatePill(btn) {
