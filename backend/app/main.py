@@ -12,7 +12,7 @@ from .database import engine, Base
 from .seeds.seed_users import seed_users
 from .seeds.seed_demo_media import seed_demo_media
 from .seeds.seed_admin_media import seed_admin_media
-from .routers import auth, media
+from .routers import auth, media, admin
 
 app = FastAPI()
 
@@ -40,6 +40,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(media.router)
+app.include_router(admin.router)
 
 if os.getenv("AUTO_CREATE_TABLES") == "1":
     Base.metadata.create_all(bind=engine)
