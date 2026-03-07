@@ -26,14 +26,14 @@ class VdFilters extends HTMLElement {
   connectedCallback() {
     const P = VdFilters.PILL;
     const C = VdFilters.COLOR;
-
+    const heightpillupl = parseInt(P.height) * 3;
     this.innerHTML = `
       <div class="mb-1 d-flex flex-column gap-2">
 
         <!-- FILTRO TIPO -->
         <div id="typeFilters"
             class="d-flex w-100 overflow-auto"
-            style="flex-wrap:nowrap; scrollbar-width:none; -ms-overflow-style:none; gap:${P.gap};">
+            style="heightflex-wrap:nowrap; scrollbar-width:none; -ms-overflow-style:none; gap:1rem;">
           ${this.renderPill("all", "", "bi-grid")}
           ${this.renderPill("film", "Film", "bi-film")}
           ${this.renderPill("serie", "Serie", "bi-tv")}
@@ -42,25 +42,30 @@ class VdFilters extends HTMLElement {
         </div>
 
         <!-- FILTRO STATO -->
-        <div id="statusFilters" class="d-flex w-100" style="gap:${P.gap};">
+        <div id="statusFilters" class="d-flex w-100" style="gap:1.7rem;">
           ${this.renderPill("all", "", "bi-grid")}
           ${this.renderPill("completed", "Visti", "bi-check")}
           ${this.renderPill("watching", "In corso", "bi-eye")}
           ${this.renderPill("recommended", "Consigliati", "bi-star")}
         </div>
 
-        <!-- SEARCH BAR -->
-        <div class="position-relative mb-1">
-          <i class="bi bi-search position-absolute"
-            style="left:0.75rem; top:50%; transform:translateY(-50%); color:#555; font-size:0.85rem;"></i>
-          <input
-            id="searchInput"
-            type="text"
-            placeholder="Cerca..."
-            class="form-control"
-            style="background:#141414; border:1px solid #2a2a2a; color:#ccc; border-radius:999px; padding-left:2.2rem; font-size:0.85rem;"
-          />
-        </div>
+          <!-- SEARCH BAR -->
+          <div class="position-relative mb-1">
+            <i class="bi bi-search position-absolute"
+              style="left:0.75rem; top:50%; transform:translateY(-50%); color:#555; font-size:0.85rem;"></i>
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Cerca..."
+              class="form-control"
+              style="background:#141414; border:1px solid #2a2a2a; color:#ccc; border-radius:999px; padding-left:2.2rem; padding-right:2.2rem; font-size:0.85rem;"
+            />
+            <i class="bi bi-x position-absolute" id="searchClear"
+              style="right:0.75rem; top:50%; transform:translateY(-50%); color:#555; font-size:2rem; cursor:pointer; display:none; transition:color 0.2s;"
+              onmouseover="this.style.color='#ccc'"
+              onmouseout="this.style.color='#555'"
+            ></i>
+          </div>
 
         <!-- SORT BUTTONS -->
         <div class="d-flex align-items-center" style="gap:${P.gap}; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; padding-bottom:2px;">
@@ -161,8 +166,20 @@ class VdFilters extends HTMLElement {
       });
     });
 
-    this.querySelector("#searchInput").addEventListener("input", (e) => {
+    const searchInput = this.querySelector("#searchInput");
+    const clearBtn = this.querySelector("#searchClear");
+
+    searchInput.addEventListener("input", (e) => {
       searchQuery = e.target.value.trim().toLowerCase();
+      clearBtn.style.display = searchQuery ? "block" : "none";
+      emit();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      searchQuery = "";
+      clearBtn.style.display = "none";
+      searchInput.focus();
       emit();
     });
 
