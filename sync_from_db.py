@@ -20,10 +20,10 @@ from pathlib import Path
 from datetime import datetime
 
 
-# ── Carica .env manualmente (senza dipendenze extra) ──────────────────────────
+# -- Carica .env manualmente (senza dipendenze extra) --------------------------
 def load_env(env_path: Path):
     if not env_path.exists():
-        print(f"❌ File .env non trovato in {env_path}")
+        print(f"ERRORE: File .env non trovato in {env_path}")
         sys.exit(1)
     with open(env_path) as f:
         for line in f:
@@ -34,7 +34,7 @@ def load_env(env_path: Path):
             os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 
-# ── Paths ─────────────────────────────────────────────────────────────────────
+# -- Paths ---------------------------------------------------------------------
 ROOT = Path(__file__).resolve().parent
 ENV_PATH = ROOT / "backend" / ".env"
 DATA_DIR = ROOT / "backend" / "app" / "data" / "admin"
@@ -43,37 +43,37 @@ load_env(ENV_PATH)
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if not DATABASE_URL:
-    print("❌ DATABASE_URL non trovata nel .env")
+    print("ERRORE: DATABASE_URL non trovata nel .env")
     sys.exit(1)
 
-# ── Connessione DB ─────────────────────────────────────────────────────────────
+# -- Connessione DB ------------------------------------------------------------
 try:
     import psycopg2
     import psycopg2.extras
 except ImportError:
-    print("❌ psycopg2 non installato. Runna: pip install psycopg2-binary")
+    print("ERRORE: psycopg2 non installato. Runna: pip install psycopg2-binary")
     sys.exit(1)
 
-print(f"🔌 Connessione al DB...")
+print("Connessione al DB...")
 try:
     conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
 except Exception as e:
-    print(f"❌ Connessione fallita: {e}")
+    print(f"ERRORE: Connessione fallita: {e}")
     sys.exit(1)
 
-# ── Fetch utente admin ─────────────────────────────────────────────────────────
+# -- Fetch utente admin --------------------------------------------------------
 with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
     cur.execute("SELECT id, email, nickname FROM users WHERE is_demo = FALSE LIMIT 1")
     admin = cur.fetchone()
 
 if not admin:
-    print("❌ Nessun utente admin trovato nel DB")
+    print("ERRORE: Nessun utente admin trovato nel DB")
     conn.close()
     sys.exit(1)
 
-print(f"👤 Admin trovato: {admin['nickname']} ({admin['email']})")
+print(f"Admin trovato: {admin['nickname']} ({admin['email']})")
 
-# ── Fetch media ────────────────────────────────────────────────────────────────
+# -- Fetch media ---------------------------------------------------------------
 with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
     cur.execute(
         """
@@ -81,16 +81,16 @@ with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         FROM media
         WHERE user_id = %s
         ORDER BY updated_at ASC NULLS FIRST
-    """,
+        """,
         (admin["id"],),
     )
     rows = cur.fetchall()
 
 conn.close()
-print(f"🎬 Media trovati: {len(rows)}")
+print(f"Media trovati: {len(rows)}")
 
 
-# ── Serializza ────────────────────────────────────────────────────────────────
+# -- Serializza ----------------------------------------------------------------
 def serialize(row):
     return {
         "title": row["title"],
@@ -115,20 +115,20 @@ for row in rows:
         buckets[t].append(serialize(row))
     else:
         skipped += 1
-        print(f"  ⚠️  Tipo sconosciuto '{t}' per '{row['title']}' — skippato")
+        print(f"  SKIP: Tipo sconosciuto '{t}' per '{row['title']}'")
 
-# ── Scrivi JSON ───────────────────────────────────────────────────────────────
+# -- Scrivi JSON ---------------------------------------------------------------
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 for type_name, items in buckets.items():
     out_path = DATA_DIR / f"seed_media_{type_name}.json"
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(items, f, ensure_ascii=False, indent=2)
-    print(f"  ✅ {out_path.name}: {len(items)} voci")
+    print(f"  OK {out_path.name}: {len(items)} voci")
 
-# ── Summary ───────────────────────────────────────────────────────────────────
+# -- Summary -------------------------------------------------------------------
 total = sum(len(v) for v in buckets.values())
-print(f"\n✅ Sync completata — {total} media salvati in {DATA_DIR}")
-print(f"   Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"\nSync completata -- {total} media salvati in {DATA_DIR}")
+print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 if skipped:
-    print(f"   ⚠️  {skipped} voci skippate (tipo sconosciuto)")
+    print(f"ATTENZIONE: {skipped} voci skippate (tipo sconosciuto)")
