@@ -1,7 +1,7 @@
 class VdCreateButton extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
-      <div class="mb-3">
+      <div class="mb-2">
         <button id="openCreateModal"
                 class="btn w-100"
                 style="

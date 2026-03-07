@@ -36,31 +36,31 @@ class VdMediaList extends HTMLElement {
     items.forEach((item) => {
       container.innerHTML += `
         <div class="list-group-item d-flex justify-content-between align-items-center"
-             style="background:#141414; color:#eaeaea; border:1px solid #2a2a2a; cursor:pointer;"
-             data-id="${item.id}"
-             data-title="${item.title || ""}"
-             data-type="${item.type || ""}"
-             data-status="${item.status || ""}"
-             data-year="${item.year || ""}"
-             data-rating="${item.rating || ""}"
-             data-notes="${item.notes || ""}">
+          style="background:#141414; color:#eaeaea; border:1px solid #2a2a2a; cursor:pointer; padding-top:0.4rem; padding-bottom:0.4rem;"             data-id="${item.id}"
+            data-title="${item.title || ""}"
+            data-type="${item.type || ""}"
+            data-status="${item.status || ""}"
+            data-year="${item.year || ""}"
+            data-rating="${item.rating || ""}"
+            data-notes="${item.notes || ""}">
 
           <div>
-            <div style="font-weight:600; color:#e6d5b8;">
+            <div style="font-weight:600; color:#e6d5b8; font-size:0.85rem;">
               ${item.title}
             </div>
 
-            <small style="color:#888;">
-            ${item.rating ? " ⭐ " + item.rating : ""}
-              •  ${item.type} • ${item.status}
-              ${item.year ? " • " + item.year : ""}
+            <small style="color:#888; font-size:0.75rem; display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
+              ${item.rating ? `<span>⭐ ${item.rating}</span>` : ""}
+              <span>${item.type}</span>
+              <span style="color:#333;">|</span>
+              <span>${item.status}</span>
+              ${item.year ? `<span style="color:#333;">|</span><span>${item.year}</span>` : ""}
             </small>
-          </div>
-
+          </div>   
           <div class="d-flex align-items-center gap-2">
 
             <div
-              style="cursor:pointer; font-size:1.3rem; color:#6c757d; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:0.2s;"
+              style="cursor:pointer; font-size:1.1rem; color:#6c757d; width:26px; height:26px; ..."
               onmouseover="this.style.background='#6c757d'; this.style.color='#fff';"
               onmouseout="this.style.background='transparent'; this.style.color='#6c757d';"
             >
@@ -68,7 +68,7 @@ class VdMediaList extends HTMLElement {
             </div>
 
             <div
-              style="cursor:pointer; font-size:1.3rem; color:#dc3545; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:0.2s;"
+              style="cursor:pointer; font-size:1.1rem; color:#dc3545; width:26px; height:26px; ..."
               onmouseover="this.style.background='#dc3545'; this.style.color='#fff';"
               onmouseout="this.style.background='transparent'; this.style.color='#dc3545';"
               class="delete-btn"

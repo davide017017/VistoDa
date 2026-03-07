@@ -1,7 +1,7 @@
 class VdFilters extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
-      <div class="mb-4 d-flex flex-column gap-3">
+      <div class="mb-4 d-flex flex-column gap-2">
 
         <!-- FILTRO TIPO -->
         <div id="typeFilters"
@@ -26,6 +26,26 @@ class VdFilters extends HTMLElement {
           ${this.renderPill("recommended", "Consigliati", "bi-star")}
         </div>
 
+        <!-- SEARCH BAR -->
+          <div class="position-relative mb-1">
+            <i class="bi bi-search position-absolute"
+              style="left:0.75rem; top:50%; transform:translateY(-50%); color:#555; font-size:0.85rem;"></i>
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Cerca..."
+              class="form-control"
+              style="
+                background:#141414;
+                border:1px solid #2a2a2a;
+                color:#ccc;
+                border-radius:999px;
+                padding-left:2.2rem;
+                font-size:0.85rem;
+              "
+            />
+          </div>
+
       </div>
     `;
 
@@ -49,12 +69,20 @@ class VdFilters extends HTMLElement {
     handlePills("typeFilters", (val) => (selectedType = val));
     handlePills("statusFilters", (val) => (selectedStatus = val));
 
+    let searchQuery = "";
+
+    this.querySelector("#searchInput").addEventListener("input", (e) => {
+      searchQuery = e.target.value.trim().toLowerCase();
+      emit();
+    });
+
     const emit = () => {
       this.dispatchEvent(
         new CustomEvent("filters-change", {
           detail: {
             type: selectedType,
             status: selectedStatus,
+            search: searchQuery,
           },
           bubbles: true,
         }),
@@ -80,8 +108,8 @@ class VdFilters extends HTMLElement {
               overflow:hidden;
               text-overflow:ellipsis;
               transition: all 0.25s ease;
-              font-size:0.85rem;
-              padding:0.4rem 0.6rem;
+              font-size:0.65rem;
+              padding:0.25rem 0.5rem;
             ">
           <i class="bi ${icon}" style="font-size:0.85rem; flex-shrink:0;"></i>
           ${label ? `<span style="margin-left:0.4rem; overflow:hidden; text-overflow:ellipsis;">${label}</span>` : ""}

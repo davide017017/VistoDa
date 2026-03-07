@@ -32,12 +32,13 @@ async function init() {
 
   // 🎛 Filtri
   document.addEventListener("filters-change", (e) => {
-    const { type, status } = e.detail;
+    const { type, status, search } = e.detail;
 
     const filtered = allMedia.filter((item) => {
       const matchType = type === "all" || item.type === type;
       const matchStatus = status === "all" || item.status === status;
-      return matchType && matchStatus;
+      const matchSearch = !search || item.title.toLowerCase().includes(search);
+      return matchType && matchStatus && matchSearch;
     });
 
     mediaList.render(filtered, currentUser);
