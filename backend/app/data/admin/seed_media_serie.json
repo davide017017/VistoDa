@@ -1,0 +1,542 @@
+[
+  {
+    "title": "Lupin",
+    "type": "serie",
+    "status": "completed",
+    "year": 2021,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-01T00:00:00"
+  },
+  {
+    "title": "Sweet Tooth",
+    "type": "serie",
+    "status": "completed",
+    "year": 2021,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-02T00:00:00"
+  },
+  {
+    "title": "Peaky Blinders",
+    "type": "serie",
+    "status": "completed",
+    "year": 2013,
+    "rating": 9.5,
+    "notes": "Preferito",
+    "updated_at": "2020-01-03T00:00:00"
+  },
+  {
+    "title": "La Casa de Papel",
+    "type": "serie",
+    "status": "completed",
+    "year": 2017,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-04T00:00:00"
+  },
+  {
+    "title": "Ozark",
+    "type": "serie",
+    "status": "completed",
+    "year": 2017,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-05T00:00:00"
+  },
+  {
+    "title": "The Big Bang Theory",
+    "type": "serie",
+    "status": "completed",
+    "year": 2007,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-06T00:00:00"
+  },
+  {
+    "title": "Breaking Bad",
+    "type": "serie",
+    "status": "completed",
+    "year": 2008,
+    "rating": 9.5,
+    "notes": "Preferito",
+    "updated_at": "2020-01-07T00:00:00"
+  },
+  {
+    "title": "Narcos",
+    "type": "serie",
+    "status": "completed",
+    "year": 2015,
+    "rating": 9.5,
+    "notes": "Preferito",
+    "updated_at": "2020-01-08T00:00:00"
+  },
+  {
+    "title": "Come Vendere Droga Online (In Fretta)",
+    "type": "serie",
+    "status": "completed",
+    "year": 2019,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-09T00:00:00"
+  },
+  {
+    "title": "Murder Mountain",
+    "type": "serie",
+    "status": "completed",
+    "year": 2018,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-11T00:00:00"
+  },
+  {
+    "title": "Heist",
+    "type": "serie",
+    "status": "completed",
+    "year": 2021,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-12T00:00:00"
+  },
+  {
+    "title": "El Chapo",
+    "type": "serie",
+    "status": "completed",
+    "year": 2017,
+    "rating": 9.5,
+    "notes": "Preferito",
+    "updated_at": "2020-01-13T00:00:00"
+  },
+  {
+    "title": "The Good Doctor",
+    "type": "serie",
+    "status": "completed",
+    "year": 2017,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-14T00:00:00"
+  },
+  {
+    "title": "Squid Game",
+    "type": "serie",
+    "status": "completed",
+    "year": 2021,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-15T00:00:00"
+  },
+  {
+    "title": "Drug Lords",
+    "type": "serie",
+    "status": "completed",
+    "year": 2018,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-18T00:00:00"
+  },
+  {
+    "title": "Daredevil",
+    "type": "serie",
+    "status": "completed",
+    "year": 2015,
+    "rating": null,
+    "notes": "Marvel",
+    "updated_at": "2020-01-19T00:00:00"
+  },
+  {
+    "title": "The Punisher",
+    "type": "serie",
+    "status": "completed",
+    "year": 2017,
+    "rating": null,
+    "notes": "Marvel",
+    "updated_at": "2020-01-20T00:00:00"
+  },
+  {
+    "title": "Space Force",
+    "type": "serie",
+    "status": "completed",
+    "year": 2020,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-22T00:00:00"
+  },
+  {
+    "title": "Disjointed",
+    "type": "serie",
+    "status": "completed",
+    "year": 2017,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-23T00:00:00"
+  },
+  {
+    "title": "Moon Knight",
+    "type": "serie",
+    "status": "completed",
+    "year": 2022,
+    "rating": null,
+    "notes": "Marvel",
+    "updated_at": "2020-01-29T00:00:00"
+  },
+  {
+    "title": "Love, Death & Robots",
+    "type": "serie",
+    "status": "completed",
+    "year": 2019,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-01-31T00:00:00"
+  },
+  {
+    "title": "Stranger Things",
+    "type": "serie",
+    "status": "completed",
+    "year": 2016,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-02-02T00:00:00"
+  },
+  {
+    "title": "The Boys",
+    "type": "serie",
+    "status": "completed",
+    "year": 2019,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-02-08T00:00:00"
+  },
+  {
+    "title": "Mercoledì",
+    "type": "serie",
+    "status": "completed",
+    "year": 2022,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-02-10T00:00:00"
+  },
+  {
+    "title": "The Playlist",
+    "type": "serie",
+    "status": "completed",
+    "year": 2022,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-02-12T00:00:00"
+  },
+  {
+    "title": "La Regina degli Scacchi",
+    "type": "serie",
+    "status": "completed",
+    "year": 2020,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-02-13T00:00:00"
+  },
+  {
+    "title": "Physical: 100",
+    "type": "serie",
+    "status": "completed",
+    "year": 2023,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-02-15T00:00:00"
+  },
+  {
+    "title": "1670",
+    "type": "serie",
+    "status": "completed",
+    "year": 2023,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-02-26T00:00:00"
+  },
+  {
+    "title": "Killer Paradox",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-03T00:00:00"
+  },
+  {
+    "title": "Il Problema dei 3 Corpi",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-11T00:00:00"
+  },
+  {
+    "title": "The Gentlemen",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-12T00:00:00"
+  },
+  {
+    "title": "Fallout",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-13T00:00:00"
+  },
+  {
+    "title": "The 8 Show",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-14T00:00:00"
+  },
+  {
+    "title": "Baby Reindeer",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-17T00:00:00"
+  },
+  {
+    "title": "Shogun",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-20T00:00:00"
+  },
+  {
+    "title": "Supacell",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-21T00:00:00"
+  },
+  {
+    "title": "Kaos",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-22T00:00:00"
+  },
+  {
+    "title": "House of Ninjas",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-24T00:00:00"
+  },
+  {
+    "title": "Il Signore degli Anelli: Gli Anelli del Potere",
+    "type": "serie",
+    "status": "completed",
+    "year": 2022,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-03-31T00:00:00"
+  },
+  {
+    "title": "Lioness",
+    "type": "serie",
+    "status": "completed",
+    "year": 2023,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-04-04T00:00:00"
+  },
+  {
+    "title": "Das Signal",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-04-08T00:00:00"
+  },
+  {
+    "title": "The Madness",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-04-11T00:00:00"
+  },
+  {
+    "title": "Dream Productions",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-04-20T00:00:00"
+  },
+  {
+    "title": "The Order",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-04-23T00:00:00"
+  },
+  {
+    "title": "Zero Day",
+    "type": "serie",
+    "status": "completed",
+    "year": 2025,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-04-24T00:00:00"
+  },
+  {
+    "title": "The Last of Us - Stagione 1",
+    "type": "serie",
+    "status": "completed",
+    "year": 2023,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-04-27T00:00:00"
+  },
+  {
+    "title": "Squid Game 2",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-04-28T00:00:00"
+  },
+  {
+    "title": "Untamed",
+    "type": "serie",
+    "status": "completed",
+    "year": 2025,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-04-30T00:00:00"
+  },
+  {
+    "title": "Dept. Q",
+    "type": "serie",
+    "status": "completed",
+    "year": 2024,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-05-01T00:00:00"
+  },
+  {
+    "title": "Il rifugio atomico",
+    "type": "serie",
+    "status": "completed",
+    "year": 2025,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-05-14T00:00:00"
+  },
+  {
+    "title": "Chernobyl",
+    "type": "serie",
+    "status": "completed",
+    "year": 2019,
+    "rating": 9.5,
+    "notes": "Preferito",
+    "updated_at": "2020-05-15T00:00:00"
+  },
+  {
+    "title": "Black Rabbit",
+    "type": "serie",
+    "status": "completed",
+    "year": 2025,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-05-16T00:00:00"
+  },
+  {
+    "title": "Living with Yourself",
+    "type": "serie",
+    "status": "completed",
+    "year": 2019,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-05-20T00:00:00"
+  },
+  {
+    "title": "Talamasca: L'ordine segreto",
+    "type": "serie",
+    "status": "completed",
+    "year": 2025,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-05-23T00:00:00"
+  },
+  {
+    "title": "Fuga",
+    "type": "serie",
+    "status": "completed",
+    "year": 2026,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-06-02T00:00:00"
+  },
+  {
+    "title": "Unfamiliar",
+    "type": "serie",
+    "status": "completed",
+    "year": 2026,
+    "rating": null,
+    "notes": null,
+    "updated_at": "2020-06-15T00:00:00"
+  },
+  {
+    "title": "Standing Up",
+    "type": "serie",
+    "status": "completed",
+    "year": 2022,
+    "rating": null,
+    "notes": "Serie TV stand-up",
+    "updated_at": "2020-06-18T00:00:00"
+  },
+  {
+    "title": "The Last of Us - Stagione 2",
+    "type": "serie",
+    "status": "recommended",
+    "year": 2025,
+    "rating": null,
+    "notes": "Da vedere",
+    "updated_at": null
+  },
+  {
+    "title": "Alice in Borderland - Stagione 3",
+    "type": "serie",
+    "status": "recommended",
+    "year": 2025,
+    "rating": null,
+    "notes": "Da vedere",
+    "updated_at": null
+  },
+  {
+    "title": "Il Business degli Stupefacenti",
+    "type": "serie",
+    "status": "recommended",
+    "year": null,
+    "rating": null,
+    "notes": "Da vedere",
+    "updated_at": null
+  }
+]

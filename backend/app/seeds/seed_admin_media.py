@@ -1,10 +1,11 @@
 import json
 from decimal import Decimal
 from pathlib import Path
+from datetime import datetime
 from ..database import SessionLocal
 from ..models import User, Media
 
-DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "seed_media.json"
+DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "admin"
 
 
 def seed_admin_media() -> None:
@@ -19,28 +20,35 @@ def seed_admin_media() -> None:
             print("Admin media already seeded")
             return
 
-        if not DATA_FILE.exists():
-            print(f"Seed skipped: {DATA_FILE} not found")
+        if not DATA_DIR.exists():
+            print(f"Seed skipped: {DATA_DIR} not found")
             return
 
-        with open(DATA_FILE, encoding="utf-8") as f:
-            media_list = json.load(f)
-
         count = 0
-        for item in media_list:
-            rating = item.get("rating")
-            db.add(
-                Media(
-                    user_id=user.id,
-                    title=item["title"],
-                    type=item["type"],
-                    status=item["status"],
-                    year=item.get("year"),
-                    rating=Decimal(str(rating)) if rating is not None else None,
-                    notes=item.get("notes"),
+        for json_file in sorted(DATA_DIR.glob("*.json")):
+            with open(json_file, encoding="utf-8") as f:
+                media_list = json.load(f)
+
+            for item in media_list:
+                rating = item.get("rating")
+                updated_at_str = item.get("updated_at")
+                db.add(
+                    Media(
+                        user_id=user.id,
+                        title=item["title"],
+                        type=item["type"],
+                        status=item["status"],
+                        year=item.get("year"),
+                        rating=Decimal(str(rating)) if rating is not None else None,
+                        notes=item.get("notes"),
+                        updated_at=(
+                            datetime.fromisoformat(updated_at_str)
+                            if updated_at_str
+                            else None
+                        ),
+                    )
                 )
-            )
-            count += 1
+                count += 1
 
         db.commit()
         print(f"Seed OK: {count} admin media created")

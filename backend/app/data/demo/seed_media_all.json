@@ -1,0 +1,110 @@
+[
+  {
+    "title": "Inception",
+    "type": "film",
+    "status": "completed",
+    "year": 2010,
+    "rating": 9.5,
+    "notes": "Mind bending masterpiece",
+    "updated_at": null
+  },
+  {
+    "title": "Interstellar",
+    "type": "film",
+    "status": "completed",
+    "year": 2014,
+    "rating": 9.8,
+    "notes": "Hans Zimmer + Nolan = perfection",
+    "updated_at": null
+  },
+  {
+    "title": "Dune: Part Two",
+    "type": "film",
+    "status": "watching",
+    "year": 2024,
+    "rating": null,
+    "notes": "Da finire nel weekend",
+    "updated_at": null
+  },
+  {
+    "title": "The Prestige",
+    "type": "film",
+    "status": "recommended",
+    "year": 2006,
+    "rating": null,
+    "notes": "Consigliato da amici",
+    "updated_at": null
+  },
+  {
+    "title": "Breaking Bad",
+    "type": "serie",
+    "status": "completed",
+    "year": 2008,
+    "rating": 10.0,
+    "notes": "One of the best series ever made",
+    "updated_at": null
+  },
+  {
+    "title": "True Detective",
+    "type": "serie",
+    "status": "completed",
+    "year": 2014,
+    "rating": 9.2,
+    "notes": "Season 1 legendary",
+    "updated_at": null
+  },
+  {
+    "title": "Severance",
+    "type": "serie",
+    "status": "watching",
+    "year": 2022,
+    "rating": null,
+    "notes": "In visione",
+    "updated_at": null
+  },
+  {
+    "title": "The Bear",
+    "type": "serie",
+    "status": "recommended",
+    "year": 2022,
+    "rating": null,
+    "notes": "Da vedere assolutamente",
+    "updated_at": null
+  },
+  {
+    "title": "Attack on Titan",
+    "type": "anime",
+    "status": "completed",
+    "year": 2013,
+    "rating": 9.0,
+    "notes": "Epic storytelling",
+    "updated_at": null
+  },
+  {
+    "title": "Death Note",
+    "type": "anime",
+    "status": "completed",
+    "year": 2006,
+    "rating": 9.7,
+    "notes": "Psychological brilliance",
+    "updated_at": null
+  },
+  {
+    "title": "Frieren: Beyond Journey's End",
+    "type": "anime",
+    "status": "watching",
+    "year": 2023,
+    "rating": null,
+    "notes": "Molto chill",
+    "updated_at": null
+  },
+  {
+    "title": "Monster",
+    "type": "anime",
+    "status": "recommended",
+    "year": 2004,
+    "rating": null,
+    "notes": "Capolavoro consigliato",
+    "updated_at": null
+  }
+]

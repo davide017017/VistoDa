@@ -1,6 +1,11 @@
+import json
 from decimal import Decimal
+from pathlib import Path
+from datetime import datetime
 from ..database import SessionLocal
 from ..models import User, Media
+
+DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "demo" / "seed_media_all.json"
 
 
 def seed_demo_media() -> None:
@@ -15,121 +20,30 @@ def seed_demo_media() -> None:
             print("Demo media already seeded")
             return
 
-        media_list = [
-            # 🎬 FILM (completed)
-            {
-                "title": "Inception",
-                "type": "film",
-                "status": "completed",
-                "year": 2010,
-                "rating": Decimal("9.5"),
-                "notes": "Mind bending masterpiece",
-            },
-            {
-                "title": "Interstellar",
-                "type": "film",
-                "status": "completed",
-                "year": 2014,
-                "rating": Decimal("9.8"),
-                "notes": "Hans Zimmer + Nolan = perfection",
-            },
-            # 🎬 FILM (watching / recommended)
-            {
-                "title": "Dune: Part Two",
-                "type": "film",
-                "status": "watching",
-                "year": 2024,
-                "rating": None,
-                "notes": "Da finire nel weekend",
-            },
-            {
-                "title": "The Prestige",
-                "type": "film",
-                "status": "recommended",
-                "year": 2006,
-                "rating": None,
-                "notes": "Consigliato da amici",
-            },
-            # 📺 SERIE (completed)
-            {
-                "title": "Breaking Bad",
-                "type": "serie",
-                "status": "completed",
-                "year": 2008,
-                "rating": Decimal("10.0"),
-                "notes": "One of the best series ever made",
-            },
-            {
-                "title": "True Detective",
-                "type": "serie",
-                "status": "completed",
-                "year": 2014,
-                "rating": Decimal("9.2"),
-                "notes": "Season 1 legendary",
-            },
-            # 📺 SERIE (watching / recommended)
-            {
-                "title": "Severance",
-                "type": "serie",
-                "status": "watching",
-                "year": 2022,
-                "rating": None,
-                "notes": "In visione",
-            },
-            {
-                "title": "The Bear",
-                "type": "serie",
-                "status": "recommended",
-                "year": 2022,
-                "rating": None,
-                "notes": "Da vedere assolutamente",
-            },
-            # 🎌 ANIME (completed)
-            {
-                "title": "Attack on Titan",
-                "type": "anime",
-                "status": "completed",
-                "year": 2013,
-                "rating": Decimal("9.0"),
-                "notes": "Epic storytelling",
-            },
-            {
-                "title": "Death Note",
-                "type": "anime",
-                "status": "completed",
-                "year": 2006,
-                "rating": Decimal("9.7"),
-                "notes": "Psychological brilliance",
-            },
-            # 🎌 ANIME (watching / recommended)
-            {
-                "title": "Frieren: Beyond Journey's End",
-                "type": "anime",
-                "status": "watching",
-                "year": 2023,
-                "rating": None,
-                "notes": "Molto chill",
-            },
-            {
-                "title": "Monster",
-                "type": "anime",
-                "status": "recommended",
-                "year": 2004,
-                "rating": None,
-                "notes": "Capolavoro consigliato",
-            },
-        ]
+        if not DATA_FILE.exists():
+            print(f"Seed skipped: {DATA_FILE} not found")
+            return
+
+        with open(DATA_FILE, encoding="utf-8") as f:
+            media_list = json.load(f)
 
         for item in media_list:
+            rating = item.get("rating")
+            updated_at_str = item.get("updated_at")
             db.add(
                 Media(
                     user_id=user.id,
                     title=item["title"],
                     type=item["type"],
                     status=item["status"],
-                    year=item["year"],
-                    rating=item["rating"],
-                    notes=item["notes"],
+                    year=item.get("year"),
+                    rating=Decimal(str(rating)) if rating is not None else None,
+                    notes=item.get("notes"),
+                    updated_at=(
+                        datetime.fromisoformat(updated_at_str)
+                        if updated_at_str
+                        else None
+                    ),
                 )
             )
 
