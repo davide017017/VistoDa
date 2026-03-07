@@ -25,32 +25,36 @@ class VdTmdbReportModal extends HTMLElement {
         }
 
         #vdTmdbReport .vd-tr-section-label {
-          font-size: 0.58rem;
+  font-size:0.6rem;
+  text-align:center;
           text-transform: uppercase;
           letter-spacing: 0.12em;
           color: #333;
           margin-bottom: 6px;
         }
 
-        #vdTmdbReport .vd-tr-found-row {
-          display: flex;
-          align-items: baseline;
-          gap: 10px;
-        }
+       #vdTmdbReport .vd-tr-found-row {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:4px;
+}
 
-        #vdTmdbReport .vd-tr-count {
-          font-size: 1.15rem;
-          font-weight: 700;
-          color: #8c7a5b;
-          font-family: 'JetBrains Mono', monospace;
-        }
+#vdTmdbReport .vd-tr-count {
+  font-size:0.9rem;
+  color:#555;
+  font-family:'JetBrains Mono', monospace;
+}
 
-        #vdTmdbReport .vd-tr-pct {
-          font-size: 0.72rem;
-          color: #555;
-          font-family: 'JetBrains Mono', monospace;
-          letter-spacing: 0.04em;
-        }
+#vdTmdbReport .vd-tr-pct {
+  font-size:1.6rem;
+  font-weight:700;
+  color:#8c7a5b;
+  font-family:'JetBrains Mono', monospace;
+  letter-spacing:0.04em;
+}
 
         #vdTmdbReport .vd-divider {
           border: none;
