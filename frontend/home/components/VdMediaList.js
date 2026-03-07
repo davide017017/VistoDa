@@ -167,9 +167,14 @@ class VdMediaList extends HTMLElement {
     container.querySelectorAll(".info-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
+        const row = btn.closest(".list-group-item");
         this.dispatchEvent(
           new CustomEvent("open-info-modal", {
-            detail: { id: btn.dataset.id, title: btn.dataset.title },
+            detail: {
+              id: btn.dataset.id,
+              title: btn.dataset.title,
+              type: row?.dataset.type,
+            },
             bubbles: true,
           }),
         );

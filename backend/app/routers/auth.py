@@ -40,6 +40,14 @@ def get_me(user: models.User = Depends(get_current_user)):
 
 
 # -------------------------
+# CONFIG (TMDB token, ecc.)
+# -------------------------
+@router.get("/config", response_model=schemas.ConfigOut)
+def get_config(user: models.User = Depends(get_current_user)):
+    return {"tmdb_token": os.getenv("TMDB_READ_TOKEN", "")}
+
+
+# -------------------------
 # UPDATE NICKNAME
 # -------------------------
 @router.patch("/me/nickname", response_model=schemas.NicknameOut)

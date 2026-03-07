@@ -63,6 +63,11 @@ class NicknameOut(BaseModel):
     nickname: str
 
 
+# Output config (token TMDB, ecc.)
+class ConfigOut(BaseModel):
+    tmdb_token: str
+
+
 # =========================
 # MEDIA
 # =========================
