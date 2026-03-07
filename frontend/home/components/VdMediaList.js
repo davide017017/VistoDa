@@ -57,19 +57,30 @@ class VdMediaList extends HTMLElement {
             </small>
           </div>
 
-          <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-danger delete-btn"
-                  data-id="${item.id}"
-                  data-title="${item.title}"
-                  data-type="${item.type || ""}"
-                  data-year="${item.year || ""}"
-                  data-status="${item.status || ""}">
-              Delete
-            </button>
+          <div class="d-flex align-items-center gap-2">
 
-            <button class="btn btn-sm btn-outline-secondary info-btn" disabled>
-  Info
-</button>
+            <div
+              style="cursor:pointer; font-size:1.3rem; color:#6c757d; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:0.2s;"
+              onmouseover="this.style.background='#6c757d'; this.style.color='#fff';"
+              onmouseout="this.style.background='transparent'; this.style.color='#6c757d';"
+            >
+              <i class="bi bi-info-circle"></i>
+            </div>
+
+            <div
+              style="cursor:pointer; font-size:1.3rem; color:#dc3545; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:0.2s;"
+              onmouseover="this.style.background='#dc3545'; this.style.color='#fff';"
+              onmouseout="this.style.background='transparent'; this.style.color='#dc3545';"
+              class="delete-btn"
+              data-id="${item.id}"
+              data-title="${item.title}"
+              data-type="${item.type || ""}"
+              data-year="${item.year || ""}"
+              data-status="${item.status || ""}"
+            >
+              <i class="bi bi-trash"></i>
+            </div>
+
           </div>
 
         </div>

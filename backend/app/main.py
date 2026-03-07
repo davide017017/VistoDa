@@ -9,7 +9,9 @@ load_dotenv(BASE_DIR / ".env")
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
-from .seed import seed_users, seed_media
+from .seeds.seed_users import seed_users
+from .seeds.seed_demo_media import seed_demo_media
+from .seeds.seed_admin_media import seed_admin_media
 from .routers import auth, media
 
 app = FastAPI()
@@ -42,7 +44,8 @@ app.include_router(media.router)
 if os.getenv("AUTO_CREATE_TABLES") == "1":
     Base.metadata.create_all(bind=engine)
     seed_users()
-    seed_media()
+    seed_demo_media()
+    seed_admin_media()
 
 
 @app.get("/")

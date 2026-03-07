@@ -39,6 +39,7 @@ class VdMediaModal extends HTMLElement {
                   ${this.renderPill("film", "Film", "bi-film")}
                   ${this.renderPill("serie", "Serie", "bi-tv")}
                   ${this.renderPill("anime", "Anime", "bi-play-circle")}
+                  ${this.renderPill("standup", "Stand-up", "bi-mic")}
                 </div>
               </div>
 

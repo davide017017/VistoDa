@@ -8,7 +8,7 @@
 # =========================================================
 
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 from decimal import Decimal
 from pydantic import BaseModel, EmailStr, Field
 
@@ -61,7 +61,7 @@ class TokenPayload(BaseModel):
 # Base comune
 class MediaBase(BaseModel):
     title: str = Field(min_length=1)
-    type: str
+    type: Literal["film", "serie", "anime", "standup"]
     status: str
     year: Optional[int] = None
     rating: Optional[Decimal] = Field(None, ge=1, le=10, max_digits=4, decimal_places=2)
@@ -76,7 +76,7 @@ class MediaCreate(MediaBase):
 # Input update (parziale)
 class MediaUpdate(BaseModel):
     title: Optional[str] = None
-    type: Optional[str] = None
+    type: Optional[Literal["film", "serie", "anime", "standup"]] = None
     status: Optional[str] = None
     year: Optional[int] = None
     rating: Optional[Decimal] = Field(None, ge=1, le=10, max_digits=4, decimal_places=2)

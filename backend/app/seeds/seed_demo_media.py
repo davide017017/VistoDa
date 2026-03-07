@@ -1,74 +1,18 @@
-import os
 from decimal import Decimal
-from .database import SessionLocal
-from .models import User, Media
-from .security import hash_password
+from ..database import SessionLocal
+from ..models import User, Media
 
 
-def seed_users() -> None:
-    db = SessionLocal()
-    try:
-        if db.query(User).first():
-            return
-
-        admin_email = os.getenv("SEED_ADMIN_EMAIL")
-        admin_password = os.getenv("SEED_ADMIN_PASSWORD")
-        admin_nickname = os.getenv("SEED_ADMIN_NICKNAME")
-
-        demo_email = os.getenv("SEED_DEMO_EMAIL")
-        demo_password = os.getenv("SEED_DEMO_PASSWORD")
-        demo_nickname = os.getenv("SEED_DEMO_NICKNAME")
-
-        if not all(
-            [
-                admin_email,
-                admin_password,
-                demo_email,
-                demo_password,
-                admin_nickname,
-                demo_nickname,
-            ]
-        ):
-            print("Seed skipped: missing env variables")
-            return
-
-        assert admin_password is not None
-        assert demo_password is not None
-
-        admin = User(
-            email=admin_email,
-            password_hash=hash_password(admin_password),
-            is_demo=False,
-            nickname=admin_nickname,
-        )
-
-        demo = User(
-            email=demo_email,
-            password_hash=hash_password(demo_password),
-            is_demo=True,
-            nickname=demo_nickname,
-        )
-
-        db.add(admin)
-        db.add(demo)
-        db.commit()
-
-        print("Seed OK: users created")
-
-    finally:
-        db.close()
-
-
-def seed_media() -> None:
+def seed_demo_media() -> None:
     db = SessionLocal()
     try:
         user = db.query(User).filter(User.is_demo == True).first()
         if not user:
-            print("No demo user found, skipping media seed")
+            print("No demo user found, skipping demo media seed")
             return
 
-        if db.query(Media).first():
-            print("Media already seeded")
+        if db.query(Media).filter(Media.user_id == user.id).first():
+            print("Demo media already seeded")
             return
 
         media_list = [
@@ -190,7 +134,7 @@ def seed_media() -> None:
             )
 
         db.commit()
-        print("Seed OK: media created")
+        print("Seed OK: demo media created")
 
     finally:
         db.close()
