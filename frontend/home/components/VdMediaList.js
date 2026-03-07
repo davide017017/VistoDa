@@ -1,3 +1,9 @@
+import { fetchTmdbInfo } from "../../shared/infoService.js";
+import { updateMedia } from "../services/mediaService.js";
+
+// Cache in memoria: "title::type" → { posterUrl, year } | null
+const posterCache = new Map();
+
 class VdMediaList extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
@@ -18,6 +24,136 @@ class VdMediaList extends HTMLElement {
         </div>
       </div>
     `;
+
+    this._posterObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const img = entry.target;
+          this._posterObserver.unobserve(img);
+          this._loadPosterAndYear(img);
+        });
+      },
+      { rootMargin: "100px" },
+    );
+  }
+
+  async _loadPosterAndYear(img) {
+    const { title, type } = img.dataset;
+    const cacheKey = `${title}::${type}`;
+
+    let info;
+    if (posterCache.has(cacheKey)) {
+      info = posterCache.get(cacheKey);
+    } else {
+      const result = await fetchTmdbInfo({ title, type });
+      info = result
+        ? { posterUrl: result.posterUrl || null, year: result.year || null }
+        : null;
+      posterCache.set(cacheKey, info);
+    }
+
+    if (!info) return;
+
+    if (info.posterUrl) this._showPoster(img, info.posterUrl);
+
+    if (info.year) {
+      const row = img.closest(".list-group-item");
+      if (!row) return;
+      const dbYear = parseInt(row.dataset.year) || null;
+      const tmdbYear = info.year;
+      this._renderYearDiff(row, dbYear, tmdbYear);
+    }
+  }
+
+  _showPoster(img, url) {
+    const thumb = img.closest(".vd-poster-wrap");
+    if (!thumb) return;
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      img.src = url;
+      img.style.opacity = "1";
+      thumb.querySelector(".vd-poster-placeholder")?.remove();
+    };
+    tempImg.src = url;
+  }
+
+  _renderYearDiff(row, dbYear, tmdbYear) {
+    const yearWrap = row.querySelector(".vd-year-wrap");
+    if (!yearWrap) return;
+
+    if (!dbYear || dbYear === tmdbYear) {
+      yearWrap.innerHTML = dbYear
+        ? `<span style="color:#333;">|</span><span>${dbYear}</span>`
+        : "";
+      return;
+    }
+
+    // Discrepanza trovata — notifica home.js
+    this.dispatchEvent(
+      new CustomEvent("year-mismatch-found", {
+        detail: { id: row.dataset.id },
+        bubbles: true,
+      }),
+    );
+
+    const mediaId = row.dataset.id;
+    yearWrap.innerHTML = `
+      <span style="color:#333;">|</span>
+      <span style="display:inline-flex; align-items:center; gap:0.3rem;">
+        <span style="color:#444; text-decoration:line-through; font-size:0.7rem;">${dbYear}</span>
+        <span style="color:#e8c87a; font-size:0.75rem;">${tmdbYear}</span>
+        <button
+          class="vd-year-update-btn"
+          data-id="${mediaId}"
+          data-year="${tmdbYear}"
+          title="Aggiorna anno a ${tmdbYear}"
+          style="
+            display:inline-flex; align-items:center; justify-content:center;
+            background:transparent; border:1px solid #8c7a5b;
+            color:#8c7a5b; border-radius:4px;
+            width:16px; height:16px; font-size:0.55rem;
+            cursor:pointer; padding:0;
+            transition: background 0.2s, color 0.2s;
+            flex-shrink:0;
+          "
+          onmouseover="this.style.background='#8c7a5b'; this.style.color='#111';"
+          onmouseout="this.style.background='transparent'; this.style.color='#8c7a5b';"
+        >
+          <i class="bi bi-arrow-repeat"></i>
+        </button>
+      </span>
+    `;
+
+    yearWrap
+      .querySelector(".vd-year-update-btn")
+      .addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const btn = e.currentTarget;
+        btn.style.pointerEvents = "none";
+        btn.innerHTML = `<i class="bi bi-hourglass-split" style="font-size:0.5rem;"></i>`;
+
+        try {
+          await updateMedia(mediaId, { year: tmdbYear });
+          row.dataset.year = tmdbYear;
+          yearWrap.innerHTML = `<span style="color:#333;">|</span><span>${tmdbYear}</span>`;
+          const cacheKey = `${row.dataset.title}::${row.dataset.type}`;
+          if (posterCache.has(cacheKey)) {
+            posterCache.get(cacheKey).year = tmdbYear;
+          }
+          // Notifica che la discrepanza è stata risolta
+          this.dispatchEvent(
+            new CustomEvent("year-mismatch-resolved", {
+              detail: { id: mediaId },
+              bubbles: true,
+            }),
+          );
+        } catch (err) {
+          btn.style.pointerEvents = "auto";
+          btn.innerHTML = `<i class="bi bi-arrow-repeat"></i>`;
+          console.error("Errore aggiornamento anno:", err);
+        }
+      });
   }
 
   render(items, currentUser, sort = "default") {
@@ -80,7 +216,6 @@ class VdMediaList extends HTMLElement {
       return;
     }
 
-    // ── DocumentFragment: un solo reflow alla fine ────────
     const fragment = document.createDocumentFragment();
 
     sorted.forEach((item) => {
@@ -88,7 +223,7 @@ class VdMediaList extends HTMLElement {
       row.className =
         "list-group-item d-flex justify-content-between align-items-center";
       row.style.cssText =
-        "background:#141414; color:#eaeaea; border:1px solid #2a2a2a; cursor:pointer; padding-top:0.4rem; padding-bottom:0.4rem;";
+        "background:#141414; color:#eaeaea; border:1px solid #2a2a2a; cursor:pointer; padding-top:0.4rem; padding-bottom:0.4rem; gap:0.6rem;";
       row.dataset.id = item.id;
       row.dataset.title = item.title || "";
       row.dataset.type = item.type || "";
@@ -98,8 +233,41 @@ class VdMediaList extends HTMLElement {
       row.dataset.notes = item.notes || "";
 
       row.innerHTML = `
-        <div>
-          <div style="font-weight:600; color:#e6d5b8; font-size:0.85rem;">
+        <!-- POSTER -->
+        <div class="vd-poster-wrap" style="
+          flex-shrink:0;
+          width:40px; height:40px;
+          border-radius:4px;
+          overflow:hidden;
+          background:#1e1e1e;
+          position:relative;
+        ">
+          <div class="vd-poster-placeholder" style="
+            width:100%; height:100%;
+            display:flex; align-items:center; justify-content:center;
+            color:#333; font-size:0.75rem;
+          ">
+            <i class="bi ${typeIcon[item.type] || "bi-grid"}"></i>
+          </div>
+          <img
+            class="vd-poster-img"
+            data-title="${(item.title || "").replace(/"/g, "&quot;")}"
+            data-type="${item.type || ""}"
+            src=""
+            alt=""
+            style="
+              position:absolute; inset:0;
+              width:100%; height:100%;
+              object-fit:cover;
+              opacity:0;
+              transition:opacity 0.3s ease;
+            "
+          />
+        </div>
+
+        <!-- INFO -->
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:600; color:#e6d5b8; font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
             ${item.title}
           </div>
           <small style="color:#888; font-size:0.75rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
@@ -107,11 +275,14 @@ class VdMediaList extends HTMLElement {
             <span><i class="bi ${typeIcon[item.type] || "bi-grid"}"></i> ${item.type}</span>
             <span style="color:#333;">|</span>
             <span><i class="bi ${statusIcon[item.status] || "bi-circle"}"></i> ${item.status}</span>
-            ${item.year ? `<span style="color:#333;">|</span><span>${item.year}</span>` : ""}
+            <span class="vd-year-wrap" style="display:inline-flex; align-items:center; gap:0.3rem;">
+              ${item.year ? `<span style="color:#333;">|</span><span>${item.year}</span>` : ""}
+            </span>
           </small>
         </div>
 
-        <div class="d-flex align-items-center gap-2">
+        <!-- ACTIONS -->
+        <div class="d-flex align-items-center gap-2" style="flex-shrink:0;">
           <div
             class="info-btn"
             data-id="${item.id}"
@@ -142,8 +313,11 @@ class VdMediaList extends HTMLElement {
       fragment.appendChild(row);
     });
 
-    // Un solo inserimento nel DOM
     container.appendChild(fragment);
+
+    container.querySelectorAll(".vd-poster-img").forEach((img) => {
+      this._posterObserver.observe(img);
+    });
 
     this.attachEvents(currentUser);
   }
@@ -151,11 +325,11 @@ class VdMediaList extends HTMLElement {
   attachEvents(currentUser) {
     const container = this.querySelector("#mediaContainer");
 
-    // CLICK RIGA → MODALE EDIT
     container.querySelectorAll(".list-group-item").forEach((row) => {
       row.addEventListener("click", (e) => {
         if (e.target.closest(".delete-btn")) return;
         if (e.target.closest(".info-btn")) return;
+        if (e.target.closest(".vd-year-update-btn")) return;
 
         this.dispatchEvent(
           new CustomEvent("open-edit-modal", {
@@ -174,7 +348,6 @@ class VdMediaList extends HTMLElement {
       });
     });
 
-    // DELETE
     container.querySelectorAll(".delete-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -193,7 +366,6 @@ class VdMediaList extends HTMLElement {
       });
     });
 
-    // INFO
     container.querySelectorAll(".info-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();

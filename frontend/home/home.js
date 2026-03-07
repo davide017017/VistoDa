@@ -26,6 +26,9 @@ let currentFilters = {
   sort: "default",
 };
 
+// IDs con discrepanza anno DB vs TMDB
+let mismatchIds = new Set();
+
 function refreshStats() {
   document.querySelector("#vnm-stats")?.computeFromMedia(allMedia);
 }
@@ -33,12 +36,17 @@ function refreshStats() {
 function applyFilters() {
   const { type, status, search, sort } = currentFilters;
 
-  const filtered = allMedia.filter((item) => {
+  let filtered = allMedia.filter((item) => {
     const matchType = type === "all" || item.type === type;
     const matchStatus = status === "all" || item.status === status;
     const matchSearch = !search || item.title.toLowerCase().includes(search);
     return matchType && matchStatus && matchSearch;
   });
+
+  // Filtro speciale: solo quelli con discrepanza anno TMDB
+  if (sort === "year_mismatch") {
+    filtered = filtered.filter((item) => mismatchIds.has(String(item.id)));
+  }
 
   const mediaList = document.querySelector("vd-media-list");
   mediaList.render(filtered, currentUser, sort);
@@ -62,11 +70,24 @@ async function init() {
     applyFilters();
   });
 
+  // 🔴 Accumula discrepanze anno trovate dal VdMediaList
+  document.addEventListener("year-mismatch-found", (e) => {
+    mismatchIds.add(String(e.detail.id));
+  });
+
+  // ✅ Rimuovi discrepanza quando aggiornata
+  document.addEventListener("year-mismatch-resolved", (e) => {
+    mismatchIds.delete(String(e.detail.id));
+    // Se siamo nel filtro mismatch, riapplica per rimuovere la riga
+    if (currentFilters.sort === "year_mismatch") applyFilters();
+  });
+
   // ➕ Create media
   document.addEventListener("create-media", async (e) => {
     try {
       await createMedia(e.detail);
       allMedia = await fetchMedia();
+      mismatchIds = new Set();
       applyFilters();
       refreshStats();
     } catch (err) {
@@ -89,6 +110,7 @@ async function init() {
     try {
       await updateMedia(e.detail.id, e.detail);
       allMedia = await fetchMedia();
+      mismatchIds = new Set();
       applyFilters();
       refreshStats();
       showToast("Modificato con successo");
@@ -134,6 +156,7 @@ async function init() {
       try {
         await deleteMedia(pendingDeleteId);
         allMedia = await fetchMedia();
+        mismatchIds = new Set();
         applyFilters();
         refreshStats();
         showToast("Eliminato con successo");

@@ -47,42 +47,50 @@ class VdFilters extends HTMLElement {
         </div>
 
         <!-- SORT BUTTONS -->
-       <div class="d-flex align-items-center justify-content-center" style="gap:0.3rem;">
+   <!-- SORT BUTTONS -->
+<div class="d-flex align-items-center" style="gap:0.3rem; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; padding-bottom:2px;">
 
-        <button type="button" class="sort-btn" data-sort="default"
-          style="display:flex; align-items:center; justify-content:center; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; width:52px; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
-          <i class="bi bi-clock" style="font-size:0.7rem;"></i>
-        </button>
+  <button type="button" class="sort-btn" data-sort="default"
+    style="display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; width:36px; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
+    <i class="bi bi-clock" style="font-size:0.7rem;"></i>
+  </button>
 
-        <span style="width:1px; height:14px; background:#2a2a2a; margin:0 0.3rem;"></span>
+  <span style="width:1px; height:14px; background:#2a2a2a; margin:0 0.2rem; flex-shrink:0;"></span>
 
-        <button type="button" class="sort-btn" data-sort="rating_desc"
-          style="display:flex; align-items:center; justify-content:center; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:0 1.3rem; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
-          <i class="bi bi-star" style="font-size:0.65rem;"></i>
-          <i class="bi bi-arrow-down" style="font-size:0.6rem;"></i>
-        </button>
+  <button type="button" class="sort-btn" data-sort="rating_desc"
+    style="display:flex; align-items:center; justify-content:center; flex-shrink:0; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:0 0.7rem; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
+    <i class="bi bi-star" style="font-size:0.65rem;"></i>
+    <i class="bi bi-arrow-down" style="font-size:0.6rem;"></i>
+  </button>
 
-        <button type="button" class="sort-btn" data-sort="rating_asc"
-          style="display:flex; align-items:center; justify-content:center; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:0 1.3rem; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
-          <i class="bi bi-star" style="font-size:0.65rem;"></i>
-          <i class="bi bi-arrow-up" style="font-size:0.6rem;"></i>
-        </button>
+  <button type="button" class="sort-btn" data-sort="rating_asc"
+    style="display:flex; align-items:center; justify-content:center; flex-shrink:0; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:0 0.7rem; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
+    <i class="bi bi-star" style="font-size:0.65rem;"></i>
+    <i class="bi bi-arrow-up" style="font-size:0.6rem;"></i>
+  </button>
 
-        <span style="width:1px; height:14px; background:#2a2a2a; margin:0 0.3rem;"></span>
+  <span style="width:1px; height:14px; background:#2a2a2a; margin:0 0.2rem; flex-shrink:0;"></span>
 
-        <button type="button" class="sort-btn" data-sort="year_desc"
-          style="display:flex; align-items:center; justify-content:center; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:0 1.3rem; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
-          <i class="bi bi-calendar" style="font-size:0.65rem;"></i>
-          <i class="bi bi-arrow-down" style="font-size:0.6rem;"></i>
-        </button>
+  <button type="button" class="sort-btn" data-sort="year_desc"
+    style="display:flex; align-items:center; justify-content:center; flex-shrink:0; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:0 0.7rem; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
+    <i class="bi bi-calendar" style="font-size:0.65rem;"></i>
+    <i class="bi bi-arrow-down" style="font-size:0.6rem;"></i>
+  </button>
 
-        <button type="button" class="sort-btn" data-sort="year_asc"
-          style="display:flex; align-items:center; justify-content:center; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:0 1.3rem; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
-          <i class="bi bi-calendar" style="font-size:0.65rem;"></i>
-          <i class="bi bi-arrow-up" style="font-size:0.6rem;"></i>
-        </button>
+  <button type="button" class="sort-btn" data-sort="year_asc"
+    style="display:flex; align-items:center; justify-content:center; flex-shrink:0; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:0 0.7rem; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
+    <i class="bi bi-calendar" style="font-size:0.65rem;"></i>
+    <i class="bi bi-arrow-up" style="font-size:0.6rem;"></i>
+  </button>
 
-      </div>
+  <span style="width:1px; height:14px; background:#2a2a2a; margin:0 0.2rem; flex-shrink:0;"></span>
+
+  <button type="button" class="sort-btn" data-sort="year_mismatch"
+    style="display:flex; align-items:center; justify-content:center; flex-shrink:0; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:0 0.7rem; height:22px; font-size:0.7rem; cursor:pointer; transition:all 0.2s ease;">
+    <i class="bi bi-exclamation-triangle" style="font-size:0.65rem;"></i>
+  </button>
+
+</div>
 
       </div>
     `;
