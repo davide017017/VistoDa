@@ -1,6 +1,7 @@
 import { saveToken } from "../shared/auth.js";
 import { API_BASE_URL } from "../shared/config.js";
 
+// Gestione login
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -22,5 +23,21 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
   saveToken(data.access_token);
 
+  window.location.href = "../home/home.html";
+});
+
+// Demo login
+document.getElementById("demoBtn").addEventListener("click", async () => {
+  const res = await fetch(`${API_BASE_URL}/auth/demo`, {
+    method: "POST",
+  });
+
+  if (!res.ok) {
+    alert("Demo non disponibile");
+    return;
+  }
+
+  const data = await res.json();
+  saveToken(data.access_token);
   window.location.href = "../home/home.html";
 });

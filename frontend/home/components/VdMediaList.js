@@ -34,18 +34,22 @@ class VdMediaList extends HTMLElement {
     }
 
     items.forEach((item) => {
-      const disabledDelete = currentUser?.is_demo ? "disabled" : "";
-
       container.innerHTML += `
         <div class="list-group-item d-flex justify-content-between align-items-center"
              style="background:#141414; color:#eaeaea; border:1px solid #2a2a2a; cursor:pointer;"
-             data-id="${item.id}">
+             data-id="${item.id}"
+             data-title="${item.title || ""}"
+             data-type="${item.type || ""}"
+             data-status="${item.status || ""}"
+             data-year="${item.year || ""}"
+             data-rating="${item.rating || ""}"
+             data-notes="${item.notes || ""}">
 
           <div>
             <div style="font-weight:600; color:#e6d5b8;">
               ${item.title}
             </div>
-            
+
             <small style="color:#888;">
             ${item.rating ? " ⭐ " + item.rating : ""}
               •  ${item.type} • ${item.status}
@@ -55,15 +59,17 @@ class VdMediaList extends HTMLElement {
 
           <div class="d-flex gap-2">
             <button class="btn btn-sm btn-outline-danger delete-btn"
-                    ${disabledDelete}
-                    data-id="${item.id}">
+                  data-id="${item.id}"
+                  data-title="${item.title}"
+                  data-type="${item.type || ""}"
+                  data-year="${item.year || ""}"
+                  data-status="${item.status || ""}">
               Delete
             </button>
 
-            <button class="btn btn-sm btn-outline-secondary"
-                    disabled>
-              Info
-            </button>
+            <button class="btn btn-sm btn-outline-secondary info-btn" disabled>
+  Info
+</button>
           </div>
 
         </div>
@@ -76,28 +82,43 @@ class VdMediaList extends HTMLElement {
   attachEvents(currentUser) {
     const container = this.querySelector("#mediaContainer");
 
-    // CLICK RIGA → MODALE
+    // CLICK RIGA → MODALE EDIT
     container.querySelectorAll(".list-group-item").forEach((row) => {
       row.addEventListener("click", (e) => {
-        if (e.target.classList.contains("delete-btn")) return;
+        if (e.target.closest(".delete-btn")) return;
+        if (e.target.closest(".info-btn")) return;
 
-        const modal = new bootstrap.Modal(this.querySelector("#editModal"));
-        modal.show();
+        this.dispatchEvent(
+          new CustomEvent("open-edit-modal", {
+            detail: {
+              id: row.dataset.id,
+              title: row.dataset.title,
+              type: row.dataset.type,
+              status: row.dataset.status,
+              year: row.dataset.year || null,
+              rating: row.dataset.rating || null,
+              notes: row.dataset.notes || null,
+            },
+            bubbles: true,
+          }),
+        );
       });
     });
 
     // DELETE
     container.querySelectorAll(".delete-btn").forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
+      btn.addEventListener("click", (e) => {
         e.stopPropagation();
 
-        const id = btn.dataset.id;
-
-        if (!confirm("Confermi eliminazione?")) return;
-
         this.dispatchEvent(
-          new CustomEvent("delete-media", {
-            detail: id,
+          new CustomEvent("delete-media-request", {
+            detail: {
+              id: btn.dataset.id,
+              title: btn.dataset.title,
+              type: btn.dataset.type,
+              year: btn.dataset.year,
+              status: btn.dataset.status,
+            },
             bubbles: true,
           }),
         );

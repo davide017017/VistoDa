@@ -1,16 +1,15 @@
-class VdCreateModal extends HTMLElement {
+class VdMediaModal extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
-      <div class="modal fade" id="createModal" tabindex="-1">
+      <div class="modal fade" id="mediaModal" tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content"
                style="background:#1a1a1a; color:#eaeaea; border:1px solid #2a2a2a;">
 
             <!-- HEADER -->
             <div class="modal-header border-0 justify-content-center position-relative">
-              <h5 class="modal-title text-center w-100"
+              <h5 id="mediaModalTitle" class="modal-title text-center w-100"
                   style="color:#e6d5b8;">
-                Crea Media
               </h5>
               <button type="button"
                       class="btn-close btn-close-white position-absolute end-0 me-3"
@@ -25,7 +24,7 @@ class VdCreateModal extends HTMLElement {
                 <label class="form-label">
                   Titolo <small class="text-secondary">(obbligatorio)</small>
                 </label>
-                <input id="createTitle"
+                <input id="mediaTitle"
                        class="form-control"
                        style="background:#141414; border:1px solid #2a2a2a; color:#eaeaea;"
                        placeholder="Es. Inception" />
@@ -36,7 +35,7 @@ class VdCreateModal extends HTMLElement {
                 <label class="form-label">
                   Tipo <small class="text-secondary">(obbligatorio)</small>
                 </label>
-                <div id="typePills" class="d-flex w-100 gap-2">
+                <div id="mediaTypePills" class="d-flex w-100 gap-2">
                   ${this.renderPill("film", "Film", "bi-film")}
                   ${this.renderPill("serie", "Serie", "bi-tv")}
                   ${this.renderPill("anime", "Anime", "bi-play-circle")}
@@ -48,7 +47,7 @@ class VdCreateModal extends HTMLElement {
                 <label class="form-label">
                   Stato <small class="text-secondary">(obbligatorio)</small>
                 </label>
-                <div id="statusPills" class="d-flex w-100 gap-2">
+                <div id="mediaStatusPills" class="d-flex w-100 gap-2">
                   ${this.renderPill("completed", "Visto", "bi-check")}
                   ${this.renderPill("watching", "In corso", "bi-eye")}
                   ${this.renderPill("recommended", "Consigliati", "bi-star")}
@@ -60,15 +59,13 @@ class VdCreateModal extends HTMLElement {
                 <label class="form-label">
                   Rating (1–10) <small class="text-secondary">(facoltativo)</small>
                 </label>
-
                 <div class="row g-2 text-center">
                   <div class="col">
-                    <button id="ratingMinus"
+                    <button id="mediaRatingMinus"
                             class="btn btn-outline-secondary w-100">−</button>
                   </div>
-
                   <div class="col">
-                    <input id="createRating"
+                    <input id="mediaRating"
                            type="number"
                            step="0.1"
                            min="1"
@@ -77,9 +74,8 @@ class VdCreateModal extends HTMLElement {
                            style="background:#141414; border:1px solid #2a2a2a; color:#eaeaea;"
                            placeholder="-" />
                   </div>
-
                   <div class="col">
-                    <button id="ratingPlus"
+                    <button id="mediaRatingPlus"
                             class="btn btn-outline-secondary w-100">+</button>
                   </div>
                 </div>
@@ -90,15 +86,13 @@ class VdCreateModal extends HTMLElement {
                 <label class="form-label">
                   Anno <small class="text-secondary">(facoltativo)</small>
                 </label>
-
                 <div class="row g-2 text-center">
                   <div class="col">
-                    <button id="yearMinus"
+                    <button id="mediaYearMinus"
                             class="btn btn-outline-secondary w-100">−</button>
                   </div>
-
                   <div class="col">
-                    <input id="createYear"
+                    <input id="mediaYear"
                            type="number"
                            min="1900"
                            max="2100"
@@ -106,9 +100,8 @@ class VdCreateModal extends HTMLElement {
                            style="background:#141414; border:1px solid #2a2a2a; color:#eaeaea;"
                            placeholder="-" />
                   </div>
-
                   <div class="col">
-                    <button id="yearPlus"
+                    <button id="mediaYearPlus"
                             class="btn btn-outline-secondary w-100">+</button>
                   </div>
                 </div>
@@ -119,7 +112,7 @@ class VdCreateModal extends HTMLElement {
                 <label class="form-label">
                   Note <small class="text-secondary">(facoltativo)</small>
                 </label>
-                <textarea id="createNotes"
+                <textarea id="mediaNotes"
                           class="form-control"
                           rows="3"
                           style="background:#141414; border:1px solid #2a2a2a; color:#eaeaea;"
@@ -135,12 +128,10 @@ class VdCreateModal extends HTMLElement {
                       data-bs-dismiss="modal">
                 Annulla
               </button>
-
               <button type="button"
-                      id="createSave"
+                      id="mediaSave"
                       class="btn px-4"
                       style="background-color:#8c7a5b; color:#0f0f0f; font-weight:600;">
-                Salva
               </button>
             </div>
 
@@ -171,38 +162,22 @@ class VdCreateModal extends HTMLElement {
   }
 
   initLogic() {
-    const modalEl = this.querySelector("#createModal");
-    const modal = new bootstrap.Modal(modalEl);
-
-    document.addEventListener("open-create-modal", () => modal.show());
-
-    let selectedType = null;
-    let selectedStatus = null;
+    this._modal = new bootstrap.Modal(this.querySelector("#mediaModal"));
+    this._currentId = null;
+    this._selectedType = null;
+    this._selectedStatus = null;
 
     const handlePills = (containerId, setter) => {
       this.querySelectorAll(`#${containerId} .pill-btn`).forEach((btn) => {
         btn.addEventListener("click", () => {
-          this.querySelectorAll(`#${containerId} .pill-btn`).forEach((b) => {
-            b.style.background = "#141414";
-            b.style.color = "#aaa";
-            b.style.border = "1px solid #2a2a2a";
-            b.style.boxShadow = "none";
-            b.style.transform = "scale(1)";
-          });
-
-          btn.style.background = "#8c7a5b";
-          btn.style.color = "#0f0f0f";
-          btn.style.border = "1px solid #8c7a5b";
-          btn.style.boxShadow = "0 0 8px rgba(140,122,91,0.5)";
-          btn.style.transform = "scale(1.03)";
-
+          this._selectPill(containerId, btn);
           setter(btn.dataset.value);
         });
       });
     };
 
-    handlePills("typePills", (val) => (selectedType = val));
-    handlePills("statusPills", (val) => (selectedStatus = val));
+    handlePills("mediaTypePills", (val) => (this._selectedType = val));
+    handlePills("mediaStatusPills", (val) => (this._selectedStatus = val));
 
     const setupCounter = (inputId, minusId, plusId, min, max, step) => {
       const input = this.querySelector(inputId);
@@ -222,37 +197,103 @@ class VdCreateModal extends HTMLElement {
       });
     };
 
-    setupCounter("#createRating", "#ratingMinus", "#ratingPlus", 1, 10, 0.5);
-    setupCounter("#createYear", "#yearMinus", "#yearPlus", 1900, 2100, 1);
+    setupCounter("#mediaRating", "#mediaRatingMinus", "#mediaRatingPlus", 1, 10, 0.5);
+    setupCounter("#mediaYear", "#mediaYearMinus", "#mediaYearPlus", 1900, 2100, 1);
 
-    this.querySelector("#createSave").addEventListener("click", () => {
-      const title = this.querySelector("#createTitle").value.trim();
-      const rating = this.querySelector("#createRating").value || null;
-      const year = this.querySelector("#createYear").value || null;
-      const notes = this.querySelector("#createNotes").value || null;
+    this.querySelector("#mediaSave").addEventListener("click", () => {
+      const title = this.querySelector("#mediaTitle").value.trim();
+      const rating = this.querySelector("#mediaRating").value || null;
+      const year = this.querySelector("#mediaYear").value || null;
+      const notes = this.querySelector("#mediaNotes").value || null;
 
-      if (!title || !selectedType || !selectedStatus) {
+      if (!title || !this._selectedType || !this._selectedStatus) {
         alert("Compila tutti i campi obbligatori");
         return;
       }
 
-      document.dispatchEvent(
-        new CustomEvent("create-media", {
-          detail: {
-            title,
-            type: selectedType,
-            status: selectedStatus,
-            year: year ? parseInt(year) : null,
-            rating: rating ? parseFloat(rating) : null,
-            notes,
-          },
-          bubbles: true,
-        }),
-      );
+      const detail = {
+        title,
+        type: this._selectedType,
+        status: this._selectedStatus,
+        year: year ? parseInt(year) : null,
+        rating: rating ? parseFloat(rating) : null,
+        notes,
+      };
 
-      modal.hide();
+      if (this._currentId) {
+        detail.id = this._currentId;
+        document.dispatchEvent(new CustomEvent("edit-media", { detail, bubbles: true }));
+      } else {
+        document.dispatchEvent(new CustomEvent("create-media", { detail, bubbles: true }));
+      }
+
+      this._modal.hide();
     });
+  }
+
+  _selectPill(containerId, activeBtn) {
+    this.querySelectorAll(`#${containerId} .pill-btn`).forEach((b) => {
+      b.style.background = "#141414";
+      b.style.color = "#aaa";
+      b.style.border = "1px solid #2a2a2a";
+      b.style.boxShadow = "none";
+      b.style.transform = "scale(1)";
+    });
+    activeBtn.style.background = "#8c7a5b";
+    activeBtn.style.color = "#0f0f0f";
+    activeBtn.style.border = "1px solid #8c7a5b";
+    activeBtn.style.boxShadow = "0 0 8px rgba(140,122,91,0.5)";
+    activeBtn.style.transform = "scale(1.03)";
+  }
+
+  _resetFields() {
+    this.querySelector("#mediaTitle").value = "";
+    this.querySelector("#mediaRating").value = "";
+    this.querySelector("#mediaYear").value = "";
+    this.querySelector("#mediaNotes").value = "";
+    this._selectedType = null;
+    this._selectedStatus = null;
+    ["mediaTypePills", "mediaStatusPills"].forEach((id) => {
+      this.querySelectorAll(`#${id} .pill-btn`).forEach((b) => {
+        b.style.background = "#141414";
+        b.style.color = "#aaa";
+        b.style.border = "1px solid #2a2a2a";
+        b.style.boxShadow = "none";
+        b.style.transform = "scale(1)";
+      });
+    });
+  }
+
+  openCreate() {
+    this._currentId = null;
+    this._resetFields();
+    this.querySelector("#mediaModalTitle").textContent = "Nuovo";
+    this.querySelector("#mediaSave").textContent = "Crea";
+    this._modal.show();
+  }
+
+  openEdit(item) {
+    this._currentId = item.id;
+    this._resetFields();
+    this.querySelector("#mediaModalTitle").textContent = "Modifica";
+    this.querySelector("#mediaSave").textContent = "Salva modifiche";
+
+    this.querySelector("#mediaTitle").value = item.title || "";
+    this.querySelector("#mediaRating").value = item.rating || "";
+    this.querySelector("#mediaYear").value = item.year || "";
+    this.querySelector("#mediaNotes").value = item.notes || "";
+
+    this._selectedType = item.type || null;
+    this._selectedStatus = item.status || null;
+
+    const typeBtn = this.querySelector(`#mediaTypePills [data-value="${item.type}"]`);
+    if (typeBtn) this._selectPill("mediaTypePills", typeBtn);
+
+    const statusBtn = this.querySelector(`#mediaStatusPills [data-value="${item.status}"]`);
+    if (statusBtn) this._selectPill("mediaStatusPills", statusBtn);
+
+    this._modal.show();
   }
 }
 
-customElements.define("vd-create-modal", VdCreateModal);
+customElements.define("vd-media-modal", VdMediaModal);

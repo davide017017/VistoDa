@@ -1,8 +1,19 @@
 import { requireAuth } from "../shared/auth.js";
-import { fetchMedia } from "./services/mediaService.js";
+import {
+  fetchMedia,
+  createMedia,
+  updateMedia,
+  deleteMedia,
+} from "./services/mediaService.js";
 import { fetchCurrentUser } from "./services/userService.js";
 
 requireAuth();
+
+function showToast(msg) {
+  document.getElementById("appToastMsg").textContent = msg;
+  const toastEl = document.getElementById("appToast");
+  bootstrap.Toast.getOrCreateInstance(toastEl).show();
+}
 
 let allMedia = [];
 let currentUser = null;
@@ -32,20 +43,66 @@ async function init() {
     mediaList.render(filtered, currentUser);
   });
 
-  // ➕ Create placeholder
+  // ➕ Create media
   document.addEventListener("create-media", async (e) => {
-    console.log("CREATE:", e.detail);
-
-    // TODO: qui poi chiameremo la vera API POST /media
-    allMedia = await fetchMedia();
-    mediaList.render(allMedia, currentUser);
+    try {
+      await createMedia(e.detail);
+      allMedia = await fetchMedia();
+      mediaList.render(allMedia, currentUser);
+    } catch (err) {
+      showToast(err.message);
+    }
   });
 
-  // 🗑 Delete placeholder
-  document.addEventListener("delete-media", (e) => {
-    console.log("Delete ID:", e.detail);
-    // qui poi metteremo vera API delete
+  // ✏️ Edit
+  const mediaModal = document.querySelector("vd-media-modal");
+
+  document.addEventListener("open-create-modal", () => {
+    mediaModal.openCreate();
   });
+
+  document.addEventListener("open-edit-modal", (e) => {
+    mediaModal.openEdit(e.detail);
+  });
+
+  document.addEventListener("edit-media", async (e) => {
+    try {
+      await updateMedia(e.detail.id, e.detail);
+      allMedia = await fetchMedia();
+      mediaList.render(allMedia, currentUser);
+      showToast("Modificato con successo");
+    } catch (err) {
+      showToast(err.message);
+    }
+  });
+
+  // 🗑 Delete
+  const deleteModal = new bootstrap.Modal(
+    document.getElementById("deleteModal"),
+  );
+  let pendingDeleteId = null;
+
+  document.addEventListener("delete-media-request", (e) => {
+    pendingDeleteId = e.detail.id;
+    const { title, type, year, status } = e.detail;
+    const parts = [title, type, year, status].filter(Boolean);
+    document.getElementById("deleteModalTitle").textContent = parts.join(" · ");
+    deleteModal.show();
+  });
+
+  document
+    .getElementById("deleteConfirmBtn")
+    .addEventListener("click", async () => {
+      deleteModal.hide();
+      try {
+        await deleteMedia(pendingDeleteId);
+        allMedia = await fetchMedia();
+        mediaList.render(allMedia, currentUser);
+        showToast("Eliminato con successo");
+      } catch (err) {
+        showToast(err.message);
+      }
+    });
 }
 
 init();
