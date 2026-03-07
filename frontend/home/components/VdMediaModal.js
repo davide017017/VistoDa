@@ -155,6 +155,8 @@ class VdMediaModal extends HTMLElement {
                 background:#141414;
                 white-space:nowrap;
                 transition: all 0.25s ease;
+                font-size:0.65rem;
+                padding:0.25rem 0.5rem;
               ">
         <i class="bi ${icon}" style="font-size:0.9rem;"></i>
         <span>${label}</span>
@@ -198,8 +200,22 @@ class VdMediaModal extends HTMLElement {
       });
     };
 
-    setupCounter("#mediaRating", "#mediaRatingMinus", "#mediaRatingPlus", 1, 10, 0.5);
-    setupCounter("#mediaYear", "#mediaYearMinus", "#mediaYearPlus", 1900, 2100, 1);
+    setupCounter(
+      "#mediaRating",
+      "#mediaRatingMinus",
+      "#mediaRatingPlus",
+      1,
+      10,
+      0.5,
+    );
+    setupCounter(
+      "#mediaYear",
+      "#mediaYearMinus",
+      "#mediaYearPlus",
+      1900,
+      2100,
+      1,
+    );
 
     this.querySelector("#mediaSave").addEventListener("click", () => {
       const title = this.querySelector("#mediaTitle").value.trim();
@@ -223,9 +239,13 @@ class VdMediaModal extends HTMLElement {
 
       if (this._currentId) {
         detail.id = this._currentId;
-        document.dispatchEvent(new CustomEvent("edit-media", { detail, bubbles: true }));
+        document.dispatchEvent(
+          new CustomEvent("edit-media", { detail, bubbles: true }),
+        );
       } else {
-        document.dispatchEvent(new CustomEvent("create-media", { detail, bubbles: true }));
+        document.dispatchEvent(
+          new CustomEvent("create-media", { detail, bubbles: true }),
+        );
       }
 
       this._modal.hide();
@@ -287,10 +307,14 @@ class VdMediaModal extends HTMLElement {
     this._selectedType = item.type || null;
     this._selectedStatus = item.status || null;
 
-    const typeBtn = this.querySelector(`#mediaTypePills [data-value="${item.type}"]`);
+    const typeBtn = this.querySelector(
+      `#mediaTypePills [data-value="${item.type}"]`,
+    );
     if (typeBtn) this._selectPill("mediaTypePills", typeBtn);
 
-    const statusBtn = this.querySelector(`#mediaStatusPills [data-value="${item.status}"]`);
+    const statusBtn = this.querySelector(
+      `#mediaStatusPills [data-value="${item.status}"]`,
+    );
     if (statusBtn) this._selectPill("mediaStatusPills", statusBtn);
 
     this._modal.show();

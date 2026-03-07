@@ -24,6 +24,19 @@ class VdMediaList extends HTMLElement {
     const container = this.querySelector("#mediaContainer");
     container.innerHTML = "";
 
+    const typeIcon = {
+      film: "bi-film",
+      serie: "bi-tv",
+      anime: "bi-play-circle",
+      standup: "bi-mic",
+    };
+
+    const statusIcon = {
+      completed: "bi-check",
+      watching: "bi-eye",
+      recommended: "bi-star",
+    };
+
     if (!items.length) {
       container.innerHTML = `
         <div class="text-center text-secondary py-4">
@@ -49,18 +62,32 @@ class VdMediaList extends HTMLElement {
               ${item.title}
             </div>
 
-            <small style="color:#888; font-size:0.75rem; display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
-              ${item.rating ? `<span>⭐ ${item.rating}</span>` : ""}
-              <span>${item.type}</span>
+            <small style="color:#888; font-size:0.75rem; display:flex; align-items:center; gap:0.85rem; flex-wrap:wrap;">
+              ${
+                item.rating
+                  ? `<span>⭐ ${item.rating}</span>
+              <span style="color:#333;">|</span>`
+                  : ""
+              }
+              <span><i class="bi ${typeIcon[item.type] || "bi-grid"}"></i> ${item.type}</span>
               <span style="color:#333;">|</span>
-              <span>${item.status}</span>
-              ${item.year ? `<span style="color:#333;">|</span><span>${item.year}</span>` : ""}
+              <span><i class="bi ${statusIcon[item.status] || "bi-circle"}"></i> ${item.status}</span>
+              ${
+                item.year
+                  ? `
+              <span style="color:#333;">|</span><span>${item.year}</span>`
+                  : ""
+              }
             </small>
+
           </div>   
           <div class="d-flex align-items-center gap-2">
 
             <div
-              style="cursor:pointer; font-size:1.1rem; color:#6c757d; width:26px; height:26px; ..."
+              class="info-btn"
+              data-id="${item.id}"
+              data-title="${item.title}"
+              style="cursor:pointer; font-size:1.1rem; color:#6c757d; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border-radius:6px; transition:0.2s;"
               onmouseover="this.style.background='#6c757d'; this.style.color='#fff';"
               onmouseout="this.style.background='transparent'; this.style.color='#6c757d';"
             >
@@ -130,6 +157,19 @@ class VdMediaList extends HTMLElement {
               year: btn.dataset.year,
               status: btn.dataset.status,
             },
+            bubbles: true,
+          }),
+        );
+      });
+    });
+
+    // INFO
+    container.querySelectorAll(".info-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.dispatchEvent(
+          new CustomEvent("open-info-modal", {
+            detail: { id: btn.dataset.id, title: btn.dataset.title },
             bubbles: true,
           }),
         );
