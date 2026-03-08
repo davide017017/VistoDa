@@ -24,10 +24,9 @@
     <style>
       /* ── Film-reel loading overlay ───────────────────────── */
       @keyframes vd-reel-spin {
-        to { transform: rotate(360deg); }
-      }
-      @keyframes vd-reel-fade-out {
-        to { opacity: 0; }
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       #vd-loading-overlay {
@@ -62,61 +61,104 @@
       }
       .vd-reel-hub {
         position: absolute;
-        top: 50%; left: 50%;
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -50%);
-        width: 13px; height: 13px;
+        width: 13px;
+        height: 13px;
         background: #8c7a5b;
         border-radius: 50%;
       }
       .vd-reel-spoke {
         position: absolute;
-        top: 50%; left: 50%;
-        width: 17px; height: 2px;
+        top: 50%;
+        left: 50%;
+        width: 17px;
+        height: 2px;
         background: #8c7a5b;
         transform-origin: 0% 50%;
         opacity: 0.55;
       }
       .vd-reel-hole {
         position: absolute;
-        width: 6px; height: 6px;
+        width: 6px;
+        height: 6px;
         background: #0f0f0f;
         border: 1.5px solid #8c7a5b;
         border-radius: 50%;
         opacity: 0.75;
       }
       .vd-loading-label {
-        font-size: 0.58rem;
+        font-size: 0.85rem;
         text-transform: uppercase;
-        letter-spacing: 0.22em;
-        color: #2e2e2e;
-        font-family: 'Courier New', monospace;
+        letter-spacing: 0.18em;
+        color: #c8b898;
+        font-family: "Courier New", monospace;
+        transition: opacity 0.3s ease;
       }
     </style>
   </head>
 
   <body class="min-vh-100" style="background-color: #0f0f0f; color: #eaeaea">
-
     <!-- ── Film-reel loading overlay ── -->
     <div id="vd-loading-overlay">
       <div id="vd-reel">
         <div class="vd-reel-ring"></div>
         <div class="vd-reel-hub"></div>
         <!-- 3 spokes at 0° / 120° / 240° -->
-        <div class="vd-reel-spoke" style="transform: translateY(-50%) rotate(0deg);"></div>
-        <div class="vd-reel-spoke" style="transform: translateY(-50%) rotate(120deg);"></div>
-        <div class="vd-reel-spoke" style="transform: translateY(-50%) rotate(240deg);"></div>
+        <div
+          class="vd-reel-spoke"
+          style="transform: translateY(-50%) rotate(0deg)"
+        ></div>
+        <div
+          class="vd-reel-spoke"
+          style="transform: translateY(-50%) rotate(120deg)"
+        ></div>
+        <div
+          class="vd-reel-spoke"
+          style="transform: translateY(-50%) rotate(240deg)"
+        ></div>
         <!-- 8 sprocket holes on a circle of radius 24px around center (32,32) -->
-        <div class="vd-reel-hole" style="top:29px; left:53px;"></div>
-        <div class="vd-reel-hole" style="top:46px; left:46px;"></div>
-        <div class="vd-reel-hole" style="top:53px; left:29px;"></div>
-        <div class="vd-reel-hole" style="top:46px; left:12px;"></div>
-        <div class="vd-reel-hole" style="top:29px;  left:5px;"></div>
-        <div class="vd-reel-hole" style="top:12px; left:12px;"></div>
-        <div class="vd-reel-hole" style="top: 5px; left:29px;"></div>
-        <div class="vd-reel-hole" style="top:12px; left:46px;"></div>
+        <div class="vd-reel-hole" style="top: 29px; left: 53px"></div>
+        <div class="vd-reel-hole" style="top: 46px; left: 46px"></div>
+        <div class="vd-reel-hole" style="top: 53px; left: 29px"></div>
+        <div class="vd-reel-hole" style="top: 46px; left: 12px"></div>
+        <div class="vd-reel-hole" style="top: 29px; left: 5px"></div>
+        <div class="vd-reel-hole" style="top: 12px; left: 12px"></div>
+        <div class="vd-reel-hole" style="top: 5px; left: 29px"></div>
+        <div class="vd-reel-hole" style="top: 12px; left: 46px"></div>
       </div>
-      <span class="vd-loading-label">Caricamento</span>
+      <span class="vd-loading-label" id="vd-loading-msg">Caricamento</span>
     </div>
+
+    <!-- Script messaggi rotanti — inline per partire subito, prima di home.js -->
+    <script>
+      (function () {
+        const msgs = [
+          "Caricamento",
+          "Stiamo spolverando i popcorn \uD83C\uDF7F",
+          "Il proiettore si sta scaldando...",
+          "Quasi pronto, siediti comodo",
+          "DB gratuito = suspense inclusa \uD83C\uDFAC",
+          "Sto cercando i tuoi film...",
+          "Regia di: un server lento \u2615",
+          "Bobina in corso...",
+          "Prenditi un attimo, ne vale la pena",
+        ];
+        let idx = 0;
+        const el = document.getElementById("vd-loading-msg");
+        window._vdMsgInterval = setInterval(() => {
+          idx = (idx + 1) % msgs.length;
+          if (el) {
+            el.style.opacity = "0";
+            setTimeout(() => {
+              el.textContent = msgs[idx];
+              el.style.opacity = "1";
+            }, 150);
+          }
+        }, 2500);
+      })();
+    </script>
 
     <div class="container py-4">
       <vd-sync-button></vd-sync-button>
@@ -202,7 +244,10 @@
     <!-- ✅ Bootstrap JS (necessario per Modal e Toast) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script type="module" src="./components/statistiche/box-statistiche.js"></script>
+    <script
+      type="module"
+      src="./components/statistiche/box-statistiche.js"
+    ></script>
     <script type="module" src="./components/vd-nick-name-modal.js"></script>
     <script type="module" src="./components/VdHeader.js"></script>
     <script type="module" src="./components/VdCreateButton.js"></script>
