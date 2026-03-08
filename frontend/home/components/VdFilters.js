@@ -1,15 +1,17 @@
 class VdFilters extends HTMLElement {
   // ─── VARIABILI DIMENSIONI PILL ────────────────────────────
-  // Modifica qui per regolare tutte le pill contemporaneamente
   static PILL = {
     height: "18px",
-    paddingX: "0.3rem", // padding orizzontale pill tipo/stato
-    paddingSort: "0 0.4rem", // padding sort buttons
-    widthDefault: "34px", // larghezza bottone "orologio"
-    fontSize: "0.6rem", // testo label
-    iconSize: "0.9rem", // icona dentro pill tipo/stato
-    sortIconSize: "0.65rem", // icona dentro sort buttons
-    gap: "0.22rem", // gap tra pill
+    heightLarge: "26px", // pill tipo/stato più grandi
+    paddingX: "0.3rem",
+    paddingSort: "0 0.4rem",
+    widthDefault: "34px",
+    fontSize: "0.6rem",
+    fontSizeLarge: "0.72rem", // font pill tipo/stato
+    iconSize: "0.9rem",
+    iconSizeLarge: "1rem", // icone pill tipo/stato
+    sortIconSize: "0.65rem",
+    gap: "0.22rem",
   };
   // ─────────
 
@@ -20,52 +22,51 @@ class VdFilters extends HTMLElement {
     tmdb: "#01b4e4",
     year: "#8c6a3f",
     mismatch: "#e85a3a",
+    visto: "#5a8a5a",
   };
   // ─────────────────────────────────────────────────────────
 
   connectedCallback() {
     const P = VdFilters.PILL;
     const C = VdFilters.COLOR;
-    const heightpillupl = parseInt(P.height) * 3;
+
     this.innerHTML = `
       <div class="mb-1 d-flex flex-column gap-2">
 
-        <!-- FILTRO TIPO -->
-        <div id="typeFilters"
-            class="d-flex w-100 overflow-auto"
-            style="heightflex-wrap:nowrap; scrollbar-width:none; -ms-overflow-style:none; gap:1rem;">
-          ${this.renderPill("all", "", "bi-grid")}
-          ${this.renderPill("film", "Film", "bi-film")}
-          ${this.renderPill("serie", "Serie", "bi-tv")}
-          ${this.renderPill("anime", "Anime", "bi-play-circle")}
-          ${this.renderPill("standup", "Stand-up", "bi-mic")}
+        <!-- FILTRO TIPO — full width, pill uguali -->
+        <div id="typeFilters" class="d-flex w-100" style="gap:6px;">
+          ${this.renderPillLarge("all", "", "bi-grid")}
+          ${this.renderPillLarge("film", "Film", "bi-film")}
+          ${this.renderPillLarge("serie", "Serie", "bi-tv")}
+          ${this.renderPillLarge("anime", "Anime", "bi-play-circle")}
+          ${this.renderPillLarge("standup", "Stand-up", "bi-mic")}
         </div>
 
-        <!-- FILTRO STATO -->
-        <div id="statusFilters" class="d-flex w-100" style="gap:1.7rem;">
-          ${this.renderPill("all", "", "bi-grid")}
-          ${this.renderPill("completed", "Visti", "bi-check")}
-          ${this.renderPill("watching", "In corso", "bi-eye")}
-          ${this.renderPill("recommended", "Consigliati", "bi-star")}
+        <!-- FILTRO STATO — full width, pill uguali -->
+        <div id="statusFilters" class="d-flex w-100" style="gap:6px;">
+          ${this.renderPillLarge("all", "", "bi-grid")}
+          ${this.renderPillLarge("completed", "Visti", "bi-check")}
+          ${this.renderPillLarge("watching", "In corso", "bi-eye")}
+          ${this.renderPillLarge("recommended", "Consigliati", "bi-star")}
         </div>
 
-          <!-- SEARCH BAR -->
-          <div class="position-relative mb-1">
-            <i class="bi bi-search position-absolute"
-              style="left:0.75rem; top:50%; transform:translateY(-50%); color:#555; font-size:0.85rem;"></i>
-            <input
-              id="searchInput"
-              type="text"
-              placeholder="Cerca..."
-              class="form-control"
-              style="background:#141414; border:1px solid #2a2a2a; color:#ccc; border-radius:999px; padding-left:2.2rem; padding-right:2.2rem; font-size:0.85rem;"
-            />
-            <i class="bi bi-x position-absolute" id="searchClear"
-              style="right:0.75rem; top:50%; transform:translateY(-50%); color:#555; font-size:2rem; cursor:pointer; display:none; transition:color 0.2s;"
-              onmouseover="this.style.color='#ccc'"
-              onmouseout="this.style.color='#555'"
-            ></i>
-          </div>
+        <!-- SEARCH BAR -->
+        <div class="position-relative mb-1">
+          <i class="bi bi-search position-absolute"
+            style="left:0.75rem; top:50%; transform:translateY(-50%); color:#555; font-size:0.85rem;"></i>
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Cerca..."
+            class="form-control"
+            style="background:#141414; border:1px solid #2a2a2a; color:#ccc; border-radius:999px; padding-left:2.2rem; padding-right:2.2rem; font-size:0.85rem;"
+          />
+          <i class="bi bi-x position-absolute" id="searchClear"
+            style="right:0.75rem; top:50%; transform:translateY(-50%); color:#555; font-size:2rem; cursor:pointer; display:none; transition:color 0.2s;"
+            onmouseover="this.style.color='#ccc'"
+            onmouseout="this.style.color='#555'"
+          ></i>
+        </div>
 
         <!-- SORT BUTTONS -->
         <div class="d-flex align-items-center" style="gap:${P.gap}; overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none; padding-bottom:2px;">
@@ -106,6 +107,21 @@ class VdFilters extends HTMLElement {
               <i class="bi bi-camera-video" style="font-size:${P.sortIconSize}; color:${C.tmdb}; flex-shrink:0;"></i>
               <i class="bi bi-arrow-up" style="font-size:${P.sortIconSize};"></i>
             </span>
+          </button>
+
+          <span style="width:1px; height:14px; background:#2a2a2a; margin:0 0.2rem; flex-shrink:0;"></span>
+
+          <!-- Visto il -->
+          <button type="button" class="sort-btn" data-sort="visto_il_desc" data-color="${C.visto}"
+            style="display:flex; align-items:center; justify-content:center; flex-shrink:0; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:${P.paddingSort}; height:${P.height}; font-size:${P.sortIconSize}; cursor:pointer; transition:all 0.2s ease;">
+            <i class="bi bi-eye-fill" style="font-size:${P.sortIconSize}; color:${C.visto};"></i>
+            <i class="bi bi-arrow-down" style="font-size:${P.sortIconSize};"></i>
+          </button>
+
+          <button type="button" class="sort-btn" data-sort="visto_il_asc" data-color="${C.visto}"
+            style="display:flex; align-items:center; justify-content:center; flex-shrink:0; gap:0.1rem; background:#141414; border:1px solid #2a2a2a; color:#aaa; border-radius:999px; padding:${P.paddingSort}; height:${P.height}; font-size:${P.sortIconSize}; cursor:pointer; transition:all 0.2s ease;">
+            <i class="bi bi-eye-fill" style="font-size:${P.sortIconSize}; color:${C.visto};"></i>
+            <i class="bi bi-arrow-up" style="font-size:${P.sortIconSize};"></i>
           </button>
 
           <span style="width:1px; height:14px; background:#2a2a2a; margin:0 0.2rem; flex-shrink:0;"></span>
@@ -226,13 +242,36 @@ class VdFilters extends HTMLElement {
     });
   }
 
+  // Pill grande per tipo/stato — flex:1 per occupare tutta la larghezza
+  renderPillLarge(value, label, icon) {
+    const P = VdFilters.PILL;
+    const isIconOnly = !label;
+    return `
+      <button type="button"
+              class="pill-btn btn d-flex align-items-center justify-content-center rounded-pill"
+              data-value="${value}"
+              style="${isIconOnly ? `flex:0 0 ${P.heightLarge}; width:${P.heightLarge};` : "flex:1; min-width:0;"}
+                     border:1px solid #2a2a2a; background:#141414; color:#aaa;
+                     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+                     transition:all 0.25s ease; font-size:${P.fontSizeLarge};
+                     padding:0.3rem 0.4rem; height:${P.heightLarge};">
+        <i class="bi ${icon}" style="font-size:${P.iconSizeLarge}; flex-shrink:0;"></i>
+        ${label ? `<span style="margin-left:0.4rem; overflow:hidden; text-overflow:ellipsis;">${label}</span>` : ""}
+      </button>
+    `;
+  }
+
+  // Pill piccola (mantenuta per compatibilità)
   renderPill(value, label, icon) {
     const P = VdFilters.PILL;
     return `
       <button type="button"
               class="pill-btn btn d-flex align-items-center justify-content-center rounded-pill"
               data-value="${value}"
-              style="flex:0 0 auto; border:1px solid #2a2a2a; background:#141414; color:#aaa; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:all 0.25s ease; font-size:${P.fontSize}; padding:${P.paddingX}; height:${P.height};">
+              style="flex:0 0 auto; border:1px solid #2a2a2a; background:#141414; color:#aaa;
+                     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+                     transition:all 0.25s ease; font-size:${P.fontSize};
+                     padding:${P.paddingX}; height:${P.height};">
         <i class="bi ${icon}" style="font-size:${P.iconSize}; flex-shrink:0;"></i>
         ${label ? `<span style="margin-left:0.4rem; overflow:hidden; text-overflow:ellipsis;">${label}</span>` : ""}
       </button>
@@ -257,7 +296,6 @@ class VdFilters extends HTMLElement {
 
   activateSortBtn(btn) {
     const color = btn.dataset.color || VdFilters.COLOR.default;
-    // Converte hex in rgb per il box-shadow
     const r = parseInt(color.slice(1, 3), 16);
     const g = parseInt(color.slice(3, 5), 16);
     const b = parseInt(color.slice(5, 7), 16);

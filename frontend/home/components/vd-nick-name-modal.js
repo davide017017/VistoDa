@@ -6,19 +6,30 @@ class VdNickNameModal extends HTMLElement {
       <style>
         #nickNameModal .modal-dialog {
           max-width: 400px;
+          margin: 0 auto;
         }
 
         #nickNameModal .modal-content {
-          background: #111;
-          color: #eaeaea;
-          border: 1px solid #222;
-          border-radius: 10px;
+          background: #141414;
+          color: #e8e8e8;
+          border: 1px solid #2a2a2a;
+          border-radius: 12px;
           overflow: hidden;
         }
 
         #nickNameModal .modal-header {
-          padding: 0.65rem 1rem 0.5rem;
-          border-bottom: 1px solid #1a1a1a;
+          padding: 0.75rem 1rem 0.55rem;
+          border-bottom: 1px solid #1e1e1e;
+        }
+
+        #nickNameModal .modal-title {
+          font-size: 0.92rem;
+          font-family: 'JetBrains Mono', 'Fira Mono', monospace;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: #8c7a5b;
+          text-align: center;
+          width: 100%;
         }
 
         #nickNameModal .modal-body {
@@ -26,8 +37,8 @@ class VdNickNameModal extends HTMLElement {
         }
 
         #nickNameModal .modal-footer {
-          padding: 0.5rem 1rem 0.65rem;
-          border-top: 1px solid #1a1a1a;
+          padding: 0.55rem 1rem 0.7rem;
+          border-top: 1px solid #1e1e1e;
         }
 
         /* Nickname row */
@@ -37,7 +48,7 @@ class VdNickNameModal extends HTMLElement {
           gap: 10px;
           padding: 0.5rem 0.75rem;
           background: #0d0d0d;
-          border: 1px solid #1e1e1e;
+          border: 1px solid #2a2118;
           border-radius: 8px;
         }
 
@@ -86,9 +97,9 @@ class VdNickNameModal extends HTMLElement {
           align-items: center;
           justify-content: center;
           background: transparent;
-          border: 1px solid #222;
+          border: 1px solid #252525;
           border-radius: 6px;
-          color: #444;
+          color: #555;
           font-size: 0.8rem;
           cursor: pointer;
           transition: all 0.2s;
@@ -113,26 +124,28 @@ class VdNickNameModal extends HTMLElement {
         /* Divider */
         #nickNameModal .vd-divider {
           border: none;
-          border-top: 1px solid #1a1a1a;
+          border-top: 1px solid #1e1e1e;
           margin: 0.75rem 0 0.6rem;
         }
 
+        /* Section label — più grande, più chiaro, centrato */
         #nickNameModal .vd-section-label {
-          font-size: 0.6rem;
+          font-size: 0.72rem;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: #333;
-          margin-bottom: 6px;
+          letter-spacing: 0.12em;
+          color: #888;
+          margin-bottom: 8px;
+          text-align: center;
         }
 
         /* Close button */
         #nickNameModal .vd-close-btn {
           background: transparent;
           border: 1px solid #2a2a2a;
-          color: #555;
-          font-size: 0.72rem;
-          padding: 0.28rem 1.2rem;
-          border-radius: 5px;
+          color: #666;
+          font-size: 0.75rem;
+          padding: 0.32rem 1.2rem;
+          border-radius: 6px;
           transition: all 0.2s;
           cursor: pointer;
         }
@@ -144,17 +157,15 @@ class VdNickNameModal extends HTMLElement {
       </style>
 
       <div class="modal fade" id="nickNameModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content">
 
             <!-- HEADER -->
-            <div class="modal-header border-0 d-flex justify-content-between align-items-center">
-              <span style="font-size:0.65rem; text-transform:uppercase; letter-spacing:0.12em; color:#444; font-family:'JetBrains Mono',monospace;">
-                Profilo
-              </span>
+            <div class="modal-header border-0 justify-content-center position-relative">
+              <h5 class="modal-title">Profilo</h5>
               <button type="button"
-                      class="btn-close btn-close-white"
-                      style="filter:invert(0.35); width:0.65em; height:0.65em;"
+                      class="btn-close position-absolute end-0 me-3"
+                      style="filter:invert(0.5); width:0.7em; height:0.7em;"
                       data-bs-dismiss="modal">
               </button>
             </div>
@@ -169,9 +180,6 @@ class VdNickNameModal extends HTMLElement {
                 <div class="vd-nick-actions" id="vnm-actions">
                   <button class="vd-icon-btn" id="vnm-edit-btn" title="Modifica nickname">
                     <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="vd-icon-btn danger" id="vnm-delete-btn" title="Elimina account">
-                    <i class="bi bi-trash"></i>
                   </button>
                 </div>
               </div>
@@ -264,16 +272,14 @@ class VdNickNameModal extends HTMLElement {
     nickEl.textContent = this._user?.nickname ?? "";
     nickEl.style.display = "";
 
-    this.querySelector("#vnm-badge").style.display =
-      this._user?.is_demo ? "inline-block" : "none";
+    this.querySelector("#vnm-badge").style.display = this._user?.is_demo
+      ? "inline-block"
+      : "none";
 
     const actionsEl = this.querySelector("#vnm-actions");
     actionsEl.innerHTML = `
       <button class="vd-icon-btn" id="vnm-edit-btn" title="Modifica nickname">
         <i class="bi bi-pencil"></i>
-      </button>
-      <button class="vd-icon-btn danger" id="vnm-delete-btn" title="Elimina account">
-        <i class="bi bi-trash"></i>
       </button>
     `;
 
@@ -309,7 +315,6 @@ class VdNickNameModal extends HTMLElement {
   open(user, stats) {
     this._user = user;
 
-    // Reset edit mode se era aperta
     if (this.querySelector("#vnm-edit-input")) {
       this._exitEditMode();
     }

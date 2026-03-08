@@ -7,10 +7,11 @@
 # - Filtra campi sensibili
 # =========================================================
 
+import re
 from datetime import datetime
 from typing import Literal, Optional
 from decimal import Decimal
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 # =========================
@@ -81,6 +82,16 @@ class MediaBase(BaseModel):
     year: Optional[int] = None
     rating: Optional[Decimal] = Field(None, ge=1, le=10, max_digits=4, decimal_places=2)
     notes: Optional[str] = None
+    visto_il: Optional[str] = None
+
+    @field_validator("visto_il")
+    @classmethod
+    def validate_visto_il(cls, v):
+        if v is None:
+            return v
+        if not re.match(r"^\d{4}(-\d{2}(-\d{2})?)?$", v):
+            raise ValueError("visto_il deve essere YYYY, YYYY-MM o YYYY-MM-DD")
+        return v
 
 
 # Input creazione
@@ -96,6 +107,16 @@ class MediaUpdate(BaseModel):
     year: Optional[int] = None
     rating: Optional[Decimal] = Field(None, ge=1, le=10, max_digits=4, decimal_places=2)
     notes: Optional[str] = None
+    visto_il: Optional[str] = None
+
+    @field_validator("visto_il")
+    @classmethod
+    def validate_visto_il(cls, v):
+        if v is None:
+            return v
+        if not re.match(r"^\d{4}(-\d{2}(-\d{2})?)?$", v):
+            raise ValueError("visto_il deve essere YYYY, YYYY-MM o YYYY-MM-DD")
+        return v
 
 
 # Output media

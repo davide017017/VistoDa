@@ -71,7 +71,6 @@ class VdMediaList extends HTMLElement {
 
     if (info.rating) {
       this._renderTmdbRating(row, info.rating);
-      // Notifica home.js del rating TMDB
       this.dispatchEvent(
         new CustomEvent("tmdb-rating-loaded", {
           detail: { id: row.dataset.id, tmdbRating: info.rating },
@@ -81,12 +80,11 @@ class VdMediaList extends HTMLElement {
     }
   }
 
-  // Fetch esplicito per tutti gli item — usato da home.js per sort TMDB
   async fetchAllTmdbInfo(items) {
     await Promise.all(
       items.map(async (item) => {
         const cacheKey = `${item.title}::${item.type}`;
-        if (posterCache.has(cacheKey)) return; // già in cache
+        if (posterCache.has(cacheKey)) return;
         const result = await fetchTmdbInfo({
           title: item.title,
           type: item.type,
@@ -99,7 +97,6 @@ class VdMediaList extends HTMLElement {
             }
           : null;
         posterCache.set(cacheKey, info);
-        // Notifica per ogni item fetchato
         if (info?.rating) {
           this.dispatchEvent(
             new CustomEvent("tmdb-rating-loaded", {
@@ -135,10 +132,8 @@ class VdMediaList extends HTMLElement {
       : "";
 
     const tmdbPart = `
-<i class="bi bi-camera-video" style="font-size:0.6rem; color:#01b4e4; flex-shrink:0;"></i>
-        
-        <span style="color:#7ab8d4; font-size:0.72rem;">${tmdbRating}</span>
-      </span>
+      <i class="bi bi-camera-video" style="font-size:0.6rem; color:#01b4e4; flex-shrink:0;"></i>
+      <span style="color:#7ab8d4; font-size:0.72rem;">${tmdbRating}</span>
     `;
 
     ratingWrap.innerHTML =
@@ -150,9 +145,18 @@ class VdMediaList extends HTMLElement {
     if (!yearWrap) return;
 
     if (!dbYear || dbYear === tmdbYear) {
-      yearWrap.innerHTML = dbYear
-        ? `<span style="color:#333;">|</span><span>${dbYear}</span>`
-        : "";
+      // Se DB è vuoto ma TMDB ha l'anno → aggiorna automaticamente
+      if (!dbYear && tmdbYear) {
+        updateMedia(row.dataset.id, { year: tmdbYear })
+          .then(() => {
+            row.dataset.year = tmdbYear;
+            // Aggiorna anche la span statica dell'anno accanto al tipo
+            const staticYear = row.querySelector(".vd-static-year");
+            if (staticYear) staticYear.textContent = tmdbYear;
+          })
+          .catch((err) => console.error("Auto-update anno fallito:", err));
+      }
+      yearWrap.innerHTML = "";
       return;
     }
 
@@ -220,6 +224,16 @@ class VdMediaList extends HTMLElement {
       });
   }
 
+  // Formatta visto_il da YYYY-MM-DD → DD/MM/YYYY
+  // oppure YYYY-MM → MM/YYYY, oppure YYYY → YYYY
+  _formatVistoIl(visto_il) {
+    if (!visto_il) return "";
+    const parts = visto_il.split("-");
+    if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    if (parts.length === 2) return `${parts[1]}/${parts[0]}`;
+    return parts[0];
+  }
+
   render(items, currentUser, sort = "default", tmdbRatings = new Map()) {
     // ── SORT ──────────────────────────────────────────────
     const sorted = [...items];
@@ -270,6 +284,24 @@ class VdMediaList extends HTMLElement {
         if (rb == null) return -1;
         return ra - rb;
       });
+    } else if (sort === "visto_il_desc") {
+      sorted.sort((a, b) => {
+        const va = a.visto_il || null;
+        const vb = b.visto_il || null;
+        if (!vb && !va) return 0;
+        if (!vb) return -1;
+        if (!va) return 1;
+        return vb < va ? -1 : vb > va ? 1 : 0;
+      });
+    } else if (sort === "visto_il_asc") {
+      sorted.sort((a, b) => {
+        const va = a.visto_il || null;
+        const vb = b.visto_il || null;
+        if (!va && !vb) return 0;
+        if (!va) return 1;
+        if (!vb) return -1;
+        return va < vb ? -1 : va > vb ? 1 : 0;
+      });
     }
 
     // ── RENDER ────────────────────────────────────────────
@@ -313,6 +345,7 @@ class VdMediaList extends HTMLElement {
       row.dataset.year = item.year || "";
       row.dataset.rating = item.rating || "";
       row.dataset.notes = item.notes || "";
+      row.dataset.visto_il = item.visto_il || "";
 
       row.innerHTML = `
         <!-- POSTER -->
@@ -341,15 +374,20 @@ class VdMediaList extends HTMLElement {
           <div style="font-weight:600; color:#e6d5b8; font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
             ${item.title}
           </div>
-          <small style="color:#888; font-size:0.75rem; display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap;">
-            <span class="vd-rating-wrap" style="display:inline-flex; align-items:center; gap:0.3rem;">
-              ${item.rating ? `<span>⭐ ${item.rating}</span><span style="color:#333;">|</span>` : ""}
+          <small style="display:flex; flex-direction:column; gap:0.15rem;">
+            <!-- RIGA 1: rating nostro + tmdb + tipo + anno -->
+            <span style="color:#888; font-size:0.75rem; display:flex; align-items:center; gap:0.35rem; overflow:hidden;">
+              <span class="vd-rating-wrap" style="display:inline-flex; align-items:center; gap:0.3rem;">
+                ${item.rating ? `<span>⭐ ${item.rating}</span><span style="color:#333;">·</span>` : ""}
+              </span>
+              <span><i class="bi ${typeIcon[item.type] || "bi-grid"}"></i> ${item.type}</span>
+              ${item.year ? `<span style="color:#333;">|</span><span class="vd-static-year">${item.year}</span>` : ""}
+              <span class="vd-year-wrap" style="display:inline-flex; align-items:center; gap:0.3rem;"></span>
             </span>
-            <span><i class="bi ${typeIcon[item.type] || "bi-grid"}"></i> ${item.type}</span>
-            <span style="color:#333;">|</span>
-            <span><i class="bi ${statusIcon[item.status] || "bi-circle"}"></i> ${item.status}</span>
-            <span class="vd-year-wrap" style="display:inline-flex; align-items:center; gap:0.3rem;">
-              ${item.year ? `<span style="color:#333;">|</span><span>${item.year}</span>` : ""}
+            <!-- RIGA 2: status + visto il -->
+            <span style="color:#888; font-size:0.72rem; display:flex; align-items:center; gap:0.35rem;">
+              <span><i class="bi ${statusIcon[item.status] || "bi-circle"}"></i> <span style="${item.status === "completed" ? "color:#5a8a5a;" : ""}">${item.status}</span></span>
+              ${item.visto_il ? `<span style="color:#333;">|</span><i class="bi bi-eye-fill" style="color:#5a8a5a; font-size:0.6rem;"></i><span style="color:#5a8a5a; font-size:0.7rem;">${this._formatVistoIl(item.visto_il)}</span>` : ""}
             </span>
           </small>
         </div>
@@ -404,6 +442,7 @@ class VdMediaList extends HTMLElement {
               year: row.dataset.year || null,
               rating: row.dataset.rating || null,
               notes: row.dataset.notes || null,
+              visto_il: row.dataset.visto_il || null,
             },
             bubbles: true,
           }),

@@ -54,6 +54,7 @@ class Media(Base):
     year: Mapped[int | None] = mapped_column(Integer, nullable=True)
     rating: Mapped[Numeric | None] = mapped_column(Numeric(4, 2), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    visto_il: Mapped[str | None] = mapped_column(String(10), nullable=True)
 
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()

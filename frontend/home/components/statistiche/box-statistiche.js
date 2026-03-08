@@ -13,6 +13,9 @@ class BoxStatistiche extends HTMLElement {
       serie = 0,
       anime = 0,
       standup = 0,
+      visto7 = 0,
+      visto30 = 0,
+      visto365 = 0,
     } = stats;
 
     const pct = (n, tot) => (tot > 0 ? Math.round((n / tot) * 100) : 0);
@@ -98,6 +101,14 @@ class BoxStatistiche extends HTMLElement {
         ${this._row("bi-play-circle", "Anime", anime, pct(anime, totale))}
         ${this._row("bi-mic", "Stand-up", standup, pct(standup, totale))}
       </div>
+
+      <!-- VISTO IL -->
+      <div class="vd-stats-section-label">Visto il</div>
+      <div class="vd-stat-rows">
+        ${this._row("bi-eye", "7 giorni", visto7, pct(visto7, totale))}
+        ${this._row("bi-eye", "30 giorni", visto30, pct(visto30, totale))}
+        ${this._row("bi-eye", "365 giorni", visto365, pct(visto365, totale))}
+      </div>
     `;
   }
 
@@ -115,6 +126,22 @@ class BoxStatistiche extends HTMLElement {
   }
 
   computeFromMedia(mediaArray = []) {
+    const now = new Date();
+    const cutoff = (days) => {
+      const d = new Date(now);
+      d.setDate(d.getDate() - days);
+      return d;
+    };
+    const c7 = cutoff(7);
+    const c30 = cutoff(30);
+    const c365 = cutoff(365);
+
+    const parseVisto = (v) => {
+      if (!v) return null;
+      const [yyyy, mm = "1", dd = "1"] = v.split("-");
+      return new Date(parseInt(yyyy), parseInt(mm) - 1, parseInt(dd));
+    };
+
     const stats = {
       totale: mediaArray.length,
       completati: mediaArray.filter((m) => m.status === "completed").length,
@@ -124,6 +151,9 @@ class BoxStatistiche extends HTMLElement {
       serie: mediaArray.filter((m) => m.type === "serie").length,
       anime: mediaArray.filter((m) => m.type === "anime").length,
       standup: mediaArray.filter((m) => m.type === "standup").length,
+      visto7: mediaArray.filter((m) => { const d = parseVisto(m.visto_il); return d && d >= c7; }).length,
+      visto30: mediaArray.filter((m) => { const d = parseVisto(m.visto_il); return d && d >= c30; }).length,
+      visto365: mediaArray.filter((m) => { const d = parseVisto(m.visto_il); return d && d >= c365; }).length,
     };
     this.render(stats);
   }
