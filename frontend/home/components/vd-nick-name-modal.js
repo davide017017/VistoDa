@@ -8,6 +8,11 @@ class VdNickNameModal extends HTMLElement {
           max-width: 400px;
           margin: 0 auto;
         }
+        #nickNameModal .modal-body {
+          padding: 0.85rem 1rem;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
 
         #nickNameModal .modal-content {
           background: #141414;

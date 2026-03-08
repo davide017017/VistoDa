@@ -8,6 +8,11 @@ class VdMediaModal extends HTMLElement {
           width: 100%;
           margin: 0 auto;
         }
+        #mediaModal .modal-body {
+          padding: 0.75rem 1rem;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
         #mediaModal .modal-content {
           background: #141414;
           color: #e8e8e8;
