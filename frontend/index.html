@@ -48,9 +48,9 @@
         const token = localStorage.getItem("token");
 
         if (token) {
-          window.location.href = "/home/home.html";
+          window.location.replace("/home/home.html");
         } else {
-          window.location.href = "/login/login.html";
+          window.location.replace("/login/login.html");
         }
       }, 1000);
     </script>

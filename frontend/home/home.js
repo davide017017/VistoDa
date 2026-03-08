@@ -53,19 +53,43 @@ function applyFilters() {
   mediaList.render(filtered, currentUser, sort, tmdbRatings);
 }
 
+// ── PWA: prevent back-button returning to splash ──────────
+history.pushState(null, "", window.location.href);
+let _backGuard = false;
+window.addEventListener("popstate", () => {
+  if (_backGuard) return;
+  _backGuard = true;
+  history.pushState(null, "", location.href);
+  setTimeout(() => (_backGuard = false), 100);
+});
+
+// ── Loading overlay helpers ────────────────────────────────
+const _overlay = document.getElementById("vd-loading-overlay");
+function hideOverlay() {
+  if (!_overlay) return;
+  _overlay.classList.add("hidden");
+  setTimeout(() => {
+    _overlay.style.display = "none";
+  }, 500);
+}
+
 async function init() {
   const header = document.querySelector("vd-header");
   const mediaList = document.querySelector("vd-media-list");
   const filters = document.querySelector("vd-filters");
 
-  // 👤 Carica utente
-  currentUser = await fetchCurrentUser();
-  header.setUser(currentUser);
+  try {
+    // 👤 Carica utente
+    currentUser = await fetchCurrentUser();
+    header.setUser(currentUser);
 
-  // 🎬 Carica media
-  allMedia = await fetchMedia();
-  applyFilters();
-  refreshStats();
+    // 🎬 Carica media
+    allMedia = await fetchMedia();
+    applyFilters();
+    refreshStats();
+  } finally {
+    hideOverlay();
+  }
 
   // 🎛 Filtri
   document.addEventListener("filters-change", async (e) => {

@@ -20,9 +20,104 @@
     />
 
     <link rel="icon" type="image/x-icon" href="../assets/favicon/favicon.ico" />
+
+    <style>
+      /* ── Film-reel loading overlay ───────────────────────── */
+      @keyframes vd-reel-spin {
+        to { transform: rotate(360deg); }
+      }
+      @keyframes vd-reel-fade-out {
+        to { opacity: 0; }
+      }
+
+      #vd-loading-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9990;
+        background: #0f0f0f;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.6rem;
+        transition: opacity 0.45s ease;
+      }
+      #vd-loading-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #vd-reel {
+        width: 64px;
+        height: 64px;
+        position: relative;
+        animation: vd-reel-spin 1.6s linear infinite;
+      }
+      .vd-reel-ring {
+        position: absolute;
+        inset: 0;
+        border: 2px solid #8c7a5b;
+        border-radius: 50%;
+        opacity: 0.65;
+      }
+      .vd-reel-hub {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 13px; height: 13px;
+        background: #8c7a5b;
+        border-radius: 50%;
+      }
+      .vd-reel-spoke {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 17px; height: 2px;
+        background: #8c7a5b;
+        transform-origin: 0% 50%;
+        opacity: 0.55;
+      }
+      .vd-reel-hole {
+        position: absolute;
+        width: 6px; height: 6px;
+        background: #0f0f0f;
+        border: 1.5px solid #8c7a5b;
+        border-radius: 50%;
+        opacity: 0.75;
+      }
+      .vd-loading-label {
+        font-size: 0.58rem;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        color: #2e2e2e;
+        font-family: 'Courier New', monospace;
+      }
+    </style>
   </head>
 
   <body class="min-vh-100" style="background-color: #0f0f0f; color: #eaeaea">
+
+    <!-- ── Film-reel loading overlay ── -->
+    <div id="vd-loading-overlay">
+      <div id="vd-reel">
+        <div class="vd-reel-ring"></div>
+        <div class="vd-reel-hub"></div>
+        <!-- 3 spokes at 0° / 120° / 240° -->
+        <div class="vd-reel-spoke" style="transform: translateY(-50%) rotate(0deg);"></div>
+        <div class="vd-reel-spoke" style="transform: translateY(-50%) rotate(120deg);"></div>
+        <div class="vd-reel-spoke" style="transform: translateY(-50%) rotate(240deg);"></div>
+        <!-- 8 sprocket holes on a circle of radius 24px around center (32,32) -->
+        <div class="vd-reel-hole" style="top:29px; left:53px;"></div>
+        <div class="vd-reel-hole" style="top:46px; left:46px;"></div>
+        <div class="vd-reel-hole" style="top:53px; left:29px;"></div>
+        <div class="vd-reel-hole" style="top:46px; left:12px;"></div>
+        <div class="vd-reel-hole" style="top:29px;  left:5px;"></div>
+        <div class="vd-reel-hole" style="top:12px; left:12px;"></div>
+        <div class="vd-reel-hole" style="top: 5px; left:29px;"></div>
+        <div class="vd-reel-hole" style="top:12px; left:46px;"></div>
+      </div>
+      <span class="vd-loading-label">Caricamento</span>
+    </div>
+
     <div class="container py-4">
       <vd-sync-button></vd-sync-button>
       <vd-tmdb-check-button></vd-tmdb-check-button>
