@@ -20,6 +20,8 @@ class VdInfoModal extends HTMLElement {
         #infoModal .modal-body {
           padding: 0.85rem 1rem;
           min-height: 120px;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
         }
 
         #infoModal .modal-footer {
@@ -48,30 +50,6 @@ class VdInfoModal extends HTMLElement {
           color: #888;
           line-height: 1.6;
           margin: 0;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        #infoModal .vd-info-overview.expanded {
-          display: block;
-        }
-
-        #infoModal .vd-expand-btn {
-          background: none;
-          border: none;
-          color: #8c7a5b;
-          font-size: 0.65rem;
-          padding: 4px 0 0;
-          cursor: pointer;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          display: none;
-        }
-
-        #infoModal .vd-expand-btn:hover {
-          color: #c8b898;
         }
 
         #infoModal .vd-poster {
@@ -115,7 +93,7 @@ class VdInfoModal extends HTMLElement {
       </style>
 
       <div class="modal fade" id="infoModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width:440px;">
           <div class="modal-content">
 
             <div class="modal-header border-0 d-flex justify-content-between align-items-center">
@@ -199,8 +177,7 @@ class VdInfoModal extends HTMLElement {
          </div>`;
 
     const overviewHtml = info.overview
-      ? `<p class="vd-info-overview" id="vd-overview">${info.overview}</p>
-         <button class="vd-expand-btn" id="vd-expand">Leggi di più ›</button>`
+      ? `<p class="vd-info-overview">${info.overview}</p>`
       : `<p style="color:#2a2a2a; font-size:0.75rem; font-style:italic; margin:0;">
            Nessuna descrizione
          </p>`;
@@ -215,18 +192,6 @@ class VdInfoModal extends HTMLElement {
         </div>
       </div>
     `;
-
-    if (info.overview) {
-      const overviewEl = body.querySelector("#vd-overview");
-      const expandBtn = body.querySelector("#vd-expand");
-      if (overviewEl.scrollHeight > overviewEl.clientHeight) {
-        expandBtn.style.display = "block";
-      }
-      expandBtn.addEventListener("click", () => {
-        overviewEl.classList.add("expanded");
-        expandBtn.style.display = "none";
-      });
-    }
   }
 }
 
